@@ -44,13 +44,13 @@ const PACKET_ROW = {
 
 describe("PacketView", () => {
   it("renders with a correctly-shaped Packet", () => {
-    render(<PacketView packet={PACKET} runId={PACKET.run_id} onReplay={() => {}} />);
+    render(<PacketView packet={PACKET} runId={PACKET.run_id} onNewCampaign={() => {}} />);
     expect(screen.getByText("Outreach Packet")).toBeTruthy();
     expect(screen.getByText(PACKET.email.subject)).toBeTruthy();
   });
 
   it("shows cost from metadata", () => {
-    render(<PacketView packet={PACKET} runId={PACKET.run_id} onReplay={() => {}} />);
+    render(<PacketView packet={PACKET} runId={PACKET.run_id} onNewCampaign={() => {}} />);
     // 45 cents → $0.4500
     expect(screen.getByText(/\$0\.4500/)).toBeTruthy();
   });
@@ -59,7 +59,7 @@ describe("PacketView", () => {
   it("does NOT crash when metadata is present (regression: PacketRow.content != Packet)", () => {
     // This would throw before the fix: packet.metadata is undefined on PacketRow
     expect(() =>
-      render(<PacketView packet={PACKET_ROW.content} runId={PACKET.run_id} onReplay={() => {}} />)
+      render(<PacketView packet={PACKET_ROW.content} runId={PACKET.run_id} onNewCampaign={() => {}} />)
     ).not.toThrow();
   });
 });

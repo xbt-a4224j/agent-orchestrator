@@ -12,13 +12,14 @@ type PageState = "idle" | "running" | "complete";
 
 interface RunData {
   run: { id: string; status: string; total_cost_cents: number };
-  packet?: { content: Packet };
+  packet?: { content: Packet; hubspot_campaign_id: string | null };
 }
 
 export default function Home() {
   const [pageState, setPageState] = useState<PageState>("idle");
   const [runId, setRunId] = useState<string | null>(null);
   const [packetData, setPacketData] = useState<Packet | null>(null);
+  const [hubspotId, setHubspotId] = useState<string | null>(null);
 
   const { events, status, totalCostCents } = useRunStream(
     pageState === "running" ? runId : null
@@ -37,6 +38,7 @@ export default function Home() {
       const data = await res.json() as RunData;
       if (data.packet) {
         setPacketData(data.packet.content);
+        setHubspotId(data.packet.hubspot_campaign_id ?? null);
         setPageState("complete");
       }
     } catch {
@@ -47,11 +49,15 @@ export default function Home() {
   function handleRunStart(id: string) {
     setRunId(id);
     setPacketData(null);
+    setHubspotId(null);
     setPageState("running");
   }
 
-  function handleReplay() {
+  function handleNewCampaign() {
     setPageState("idle");
+    setRunId(null);
+    setPacketData(null);
+    setHubspotId(null);
   }
 
   async function handleSelectRun(id: string) {
@@ -61,8 +67,10 @@ export default function Home() {
       const data = await res.json() as RunData;
       if (data.packet) {
         setPacketData(data.packet.content);
+        setHubspotId(data.packet.hubspot_campaign_id ?? null);
         setPageState("complete");
       } else {
+        setHubspotId(null);
         setPageState("running");
       }
     } catch {
@@ -92,7 +100,8 @@ export default function Home() {
           <PacketView
             packet={packetData}
             runId={runId}
-            onReplay={handleReplay}
+            initialHubspotId={hubspotId}
+            onNewCampaign={handleNewCampaign}
           />
         )}
       </main>

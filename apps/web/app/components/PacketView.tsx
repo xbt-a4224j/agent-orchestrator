@@ -1,21 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Packet } from "@agent-orchestrator/engine";
 
 interface PacketViewProps {
   packet: Packet;
   runId: string;
-  onReplay: () => void;
+  initialHubspotId?: string | null;
+  onNewCampaign: () => void;
 }
 
 const TABS = ["Email", "LinkedIn", "Agenda", "Send sequence", "Research"] as const;
 type Tab = (typeof TABS)[number];
 
-export default function PacketView({ packet, runId, onReplay }: PacketViewProps) {
+export default function PacketView({ packet, runId, initialHubspotId, onNewCampaign }: PacketViewProps) {
   const [tab, setTab] = useState<Tab>("Email");
-  const [hubspotId, setHubspotId] = useState<string | null>(null);
+  const [hubspotId, setHubspotId] = useState<string | null>(initialHubspotId ?? null);
   const [pushing, setPushing] = useState(false);
+
+  // Reset hubspot state when switching to a different run
+  useEffect(() => {
+    setHubspotId(initialHubspotId ?? null);
+  }, [runId, initialHubspotId]);
 
   async function pushToHubspot() {
     setPushing(true);
@@ -40,18 +46,25 @@ export default function PacketView({ packet, runId, onReplay }: PacketViewProps)
         </div>
         <div className="flex gap-2">
           <button
-            onClick={onReplay}
+            onClick={onNewCampaign}
             className="px-3 py-1.5 text-sm rounded border border-gray-700 text-gray-300 hover:bg-gray-800 transition-colors"
           >
-            ↺ Replay
+            + New campaign
           </button>
-          <button
-            onClick={pushToHubspot}
-            disabled={pushing || !!hubspotId}
-            className="px-3 py-1.5 text-sm rounded bg-orange-700 hover:bg-orange-600 disabled:opacity-50 text-white transition-colors"
-          >
-            {hubspotId ? `→ ${hubspotId}` : pushing ? "Pushing…" : "Push to HubSpot"}
-          </button>
+          {hubspotId ? (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-green-900/50 border border-green-700/50 text-green-400">
+              <span>✓</span>
+              <span>In HubSpot</span>
+            </div>
+          ) : (
+            <button
+              onClick={pushToHubspot}
+              disabled={pushing}
+              className="px-3 py-1.5 text-sm rounded bg-orange-700 hover:bg-orange-600 disabled:opacity-50 text-white transition-colors"
+            >
+              {pushing ? "Pushing…" : "Push to HubSpot"}
+            </button>
+          )}
         </div>
       </div>
 
