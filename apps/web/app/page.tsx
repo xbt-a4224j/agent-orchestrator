@@ -12,7 +12,7 @@ type PageState = "idle" | "running" | "complete";
 
 interface RunData {
   run: { id: string; status: string; total_cost_cents: number };
-  packet?: Packet;
+  packet?: { content: Packet };
 }
 
 export default function Home() {
@@ -36,7 +36,7 @@ export default function Home() {
       const res = await fetch(`/api/runs/${id}`);
       const data = await res.json() as RunData;
       if (data.packet) {
-        setPacketData(data.packet as Packet);
+        setPacketData(data.packet.content);
         setPageState("complete");
       }
     } catch {
@@ -60,7 +60,7 @@ export default function Home() {
       const res = await fetch(`/api/runs/${id}`);
       const data = await res.json() as RunData;
       if (data.packet) {
-        setPacketData(data.packet as Packet);
+        setPacketData(data.packet.content);
         setPageState("complete");
       } else {
         setPageState("running");
