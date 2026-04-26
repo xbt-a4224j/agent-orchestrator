@@ -16,3 +16,6 @@ export * from "./specialists/linkedin_writer";
 export * from "./specialists/agenda_writer";
 export * from "./specialists/tone_checker";
 export * from "./integrations/enrichment.mock";
+export * from "./integrations/hubspot.mock";
+export * from "./integrations/resend.mock";
+export * from "./integrations/engagement.mock";
