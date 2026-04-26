@@ -15,6 +15,7 @@
     "test": "turbo run test",
     "matrix": "tsx scripts/verify_matrix.ts",
     "check": "turbo run lint typecheck test && tsx scripts/verify_matrix.ts",
+    "seed:demo": "tsx scripts/seed_demo.ts",
     "db:migrate": "turbo run migrate"
   },
   "devDependencies": {
