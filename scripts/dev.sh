@@ -29,18 +29,17 @@ until docker exec "$DB_CONTAINER" pg_isready -U "$DB_USER" -q; do sleep 1; done
 echo "Postgres ready."
 
 # ── .env.local ───────────────────────────────────────────────────────────────
-ENV_FILE="apps/web/.env.local"
+ENV_FILE=".env.local"
 if [[ ! -f "$ENV_FILE" ]]; then
-  mkdir -p "$(dirname "$ENV_FILE")"
   cat > "$ENV_FILE" <<EOF
-DATABASE_URL=postgres://${DB_USER}:${DB_PASS}@localhost:${DB_PORT}/${DB_NAME}
-ANTHROPIC_API_KEY=your_key_here
+ANTHROPIC_API_KEY=
+DATABASE_URL=
 EOF
-  echo "Created $ENV_FILE — fill in ANTHROPIC_API_KEY before running again."
+  echo "Created $ENV_FILE — fill in ANTHROPIC_API_KEY and DATABASE_URL before running again."
   exit 1
 fi
 
-if grep -q "your_key_here" "$ENV_FILE"; then
+if grep -qE '^ANTHROPIC_API_KEY=$' "$ENV_FILE"; then
   echo "ERROR: fill in ANTHROPIC_API_KEY in $ENV_FILE first."
   exit 1
 fi

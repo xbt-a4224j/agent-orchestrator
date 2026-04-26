@@ -224,3 +224,91 @@ CI and tests are first-class. Tests ship inside the same ticket as the code they
 - **fast-check property tests + LLM calls.** Property tests must use fixtures, not live LLMs, or they'll hammer your API budget. The replay harness ships in #11 specifically because everything after depends on it.
 - **Turbo + Next.js dev caching.** `turbo dev` caches package builds aggressively; if you change `packages/engine` and don't see it reflected, restart with `turbo dev --force`.
 - **`tone_checker` infinite loops.** If the writer keeps rephrasing into rejection, you need a hard retry cap (max 1) AND a `tone_failed` flag on the packet, not unbounded recursion.
+
+---
+
+## Execution mode (read this if you're Claude Code working through `tickets.md`)
+
+This section is the operating manual for the agent (you, probably) shipping the tickets one by one. The user expects narration as you go — they're not just looking for code in main, they're looking for the *thinking* behind it. Slow down enough to surface decisions.
+
+### The loop, per ticket
+
+1. **Load context.** Read this file (`CLAUDE.md`) if you haven't. If `INTERVIEW_NOTES.md` exists locally (it's gitignored — present only on the user's machine), read it too. That file maps tickets to the talking points the user will use in interview, and you should reference it when narrating.
+2. **Pick the next ticket.** Run `gh issue list --state open --json number,title,labels,body --limit 50`. Filter to issues whose `Blocked by` lines (in the body) reference only closed issues. Among those, pick the lowest-numbered. Don't skip ahead — block ordering exists for a reason.
+3. **Claim it.** Create a todo for the ticket using `TaskCreate`, status `in_progress`. Comment on the issue: `gh issue comment <N> --body "Starting"`.
+4. **Branch.** `git checkout -b <type>/<N>-<short-slug>`. Type matches the ticket's conventional-commit type. Slug is 2–4 words from the title.
+5. **Implement.** Read the ticket body in full. Implement against the acceptance criteria — every checkbox must be satisfiable on commit. Tests ship in the same commit as the code they cover.
+6. **Narrate as you go.** This is the part that matters. See "Narration discipline" below.
+7. **Verify locally.** Run `npm run lint && npm run typecheck && npm test -- --run`. If anything is red, fix it before commit. Never commit red.
+8. **Commit.** One commit per ticket. Use the ticket title verbatim as the commit subject — it was authored as commit-subject-ready.
+9. **PR + auto-merge.**
+   ```bash
+   gh pr create --fill --body "Closes #<N>"
+   gh pr merge --auto --squash
+   ```
+   Wait for CI green. If CI fails, fix in the same branch and push again — don't open a new PR.
+10. **Close out.** Update the todo to `completed`. Tick the ticket's acceptance checkboxes via the GitHub UI or `gh issue edit`.
+11. **Pause.** Confirm with the user before claiming the next ticket. Don't auto-chain.
+
+### Narration discipline (don't skip)
+
+Every time you make a non-trivial decision while implementing a ticket, surface it in chat. Format:
+
+> *"In `packages/engine/src/orchestrator.ts:47` I'm using `Promise.allSettled` instead of `Promise.all` because a single specialist failure shouldn't poison the parallel siblings — the orchestrator marks the failed step and continues. Trade-off: every caller has to handle the partial-success case explicitly. This is the substrate move under JD line 'building tools, improving orchestration, and making our agents smarter' — the failure mode IS the orchestration design."*
+
+The shape:
+- **Where** — `<path>:<line>` or `<path>:<symbol>`. Same form Claude Code uses internally; copies cleanly into IDE go-to-definition.
+- **What** — the choice you made.
+- **Why** — the trade-off, or what you ruled out.
+- **JD callback when applicable** — name the JD bullet (from `INTERVIEW_NOTES.md`) the choice maps to.
+
+You don't need to narrate every line. Narrate at decision boundaries: choosing between two valid approaches, picking a library, naming a type, deciding what to test, deciding what *not* to test, structuring a file. Skip narration for obvious work (writing imports, pasting boilerplate).
+
+### After each ticket merges — talking-point hand-back
+
+Every merge ends with a one-paragraph summary back to the user, structured as:
+
+```
+Shipped #N: <title>
+
+Code: <key path>:<line> — <one-line of what changed>
+Test: <key test path> — <one-line of what's covered>
+JD line covered: "<verbatim quote from JD>" (per INTERVIEW_NOTES.md)
+Talking point this earns: "<one-sentence interview soundbite>"
+DESIGN.md note (if applicable): <trade-off worth defending>
+```
+
+This is the JD-mapping you'll surface in interview, generated as a side effect of the work. By the time all 25 tickets ship, every JD bullet has at least one concrete example tied to a real commit on main.
+
+### Block-level pauses
+
+After each block completes (B0 done, B1 done, etc.), do a longer hand-back:
+
+```
+Block <N> complete. Tickets <#a–#b> shipped on main.
+
+What this block proves: <1–2 sentence framing>
+JD lines this block hit: <list, with quotes>
+Senior signals planted: <list>
+Carry-forward risk: <anything that might bite future blocks>
+
+Want to continue to Block <N+1>, or step away?
+```
+
+Block-level pauses are when the user makes the natural call to ship for the day, take a break, or push through. Don't decide for them.
+
+### When to escalate to the user mid-ticket
+
+Stop and ask if:
+- A ticket's acceptance criteria are ambiguous on second read.
+- An implementation choice would change a public interface another ticket depends on.
+- An LLM call would cost more than ~$1 in a single ticket (sanity-check budget).
+- A test you'd write to satisfy the acceptance criteria would take longer than the rest of the ticket combined.
+- You'd need to add a new dependency not listed in the ticket's `What.` section.
+
+In all five cases, narrate the situation, propose 2–3 options, ask the user to pick. Don't pick for them.
+
+### Conventional-commit reminder
+
+Every commit on this repo is conventional. The commit subject is the ticket title — that's why ticket titles read like commit messages. Subject ≤72 chars, lowercase-ish, imperative mood, no trailing period. Body explains why; footer carries `Closes #N`. Semantic-release picks up `feat:` and `fix:` and cuts versions automatically.
+
