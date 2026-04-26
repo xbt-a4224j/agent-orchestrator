@@ -1,0 +1,45 @@
+# --- private planning (gitignored) ---
+INTERVIEW_NOTES.md
+TALKING_POINTS.md
+/_private/
+/notes/
+
+# --- ad-hoc screenshots at repo root ---
+/img*.png
+/Screenshot*.png
+/screenshot*.png
+
+# --- IDE / OS ---
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# --- local state ---
+*.db
+*.sqlite3
+/tmp/
+.env
+.env.local
+.env.*.local
+
+# --- Node / TypeScript ---
+node_modules/
+.next/
+.vite/
+.turbo/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+.pnpm-debug.log
+
+# --- testing fixtures (LLM responses) ---
+# committed by default — these are deterministic replay assets
+# uncomment to opt out:
+# /tests/fixtures/llm/
+
+# --- vercel ---
+.vercel
