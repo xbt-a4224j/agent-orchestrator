@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm run build --filter=web",
+  "buildCommand": "cd ../.. && pnpm run build --filter=@agent-orchestrator/web",
   "outputDirectory": ".next"
 }
