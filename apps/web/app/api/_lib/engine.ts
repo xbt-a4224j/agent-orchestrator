@@ -1,7 +1,6 @@
 import {
   LLMClient,
   runOrchestrator,
-  plan,
   OrchestratorEmitter,
   DEFAULT_DAG,
   assemblePacket,
@@ -41,6 +40,9 @@ export async function executeRun(brief: Brief, runId: string, emitter: Orchestra
 
   await db`UPDATE runs SET status = 'running' WHERE id = ${runId}`;
 
+  // Always use DEFAULT_DAG — specialists are keyed to its exact node IDs
+  const dag = DEFAULT_DAG;
+
   // Persist each step to DB as it completes so SSE polling sees real-time progress
   emitter.on("event", (event) => {
     if (event.type === "step.started" || event.type === "step.succeeded" || event.type === "step.failed") {
@@ -52,8 +54,6 @@ export async function executeRun(brief: Brief, runId: string, emitter: Orchestra
       });
     }
   });
-
-  const dag = await plan(brief, llm).then((r) => (r.ok ? r.value : DEFAULT_DAG));
 
   const registry: SpecialistRegistry = {
     planner: async () => ({ ok: true, value: dag }),
