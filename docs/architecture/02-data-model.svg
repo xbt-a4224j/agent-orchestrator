@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 500" width="860" height="500" font-family="'Courier New', Courier, monospace">
+  <rect width="860" height="500" fill="#ffffff"/>
+  <text x="430" y="32" font-size="15" font-weight="bold" fill="#111" text-anchor="middle">Data Model (5 tables)</text>
+
+  <!-- briefs -->
+  <rect x="30" y="55" width="200" height="130" rx="5" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.5"/>
+  <rect x="30" y="55" width="200" height="28" rx="5" fill="#BFDBFE" stroke="#93C5FD" stroke-width="1.5"/>
+  <text x="130" y="74" font-size="12" font-weight="bold" fill="#1D4ED8" text-anchor="middle">briefs</text>
+  <text x="45" y="100" font-size="10.5" fill="#374151">id UUID PK</text>
+  <text x="45" y="116" font-size="10.5" fill="#374151">payload JSONB</text>
+  <text x="45" y="132" font-size="10.5" fill="#374151">target_domain TEXT</text>
+  <text x="45" y="148" font-size="10.5" fill="#374151">created_at TIMESTAMPTZ</text>
+  <text x="45" y="164" font-size="10.5" fill="#374151">goal TEXT</text>
+
+  <!-- runs -->
+  <rect x="280" y="55" width="200" height="160" rx="5" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+  <rect x="280" y="55" width="200" height="28" rx="5" fill="#BBF7D0" stroke="#86EFAC" stroke-width="1.5"/>
+  <text x="380" y="74" font-size="12" font-weight="bold" fill="#15803D" text-anchor="middle">runs</text>
+  <text x="295" y="100" font-size="10.5" fill="#374151">id UUID PK</text>
+  <text x="295" y="116" font-size="10.5" fill="#374151">brief_id UUID FK→briefs</text>
+  <text x="295" y="132" font-size="10.5" fill="#374151">status TEXT</text>
+  <text x="295" y="148" font-size="10.5" fill="#374151">total_cost_cents INT</text>
+  <text x="295" y="164" font-size="10.5" fill="#374151">started_at TIMESTAMPTZ</text>
+  <text x="295" y="180" font-size="10.5" fill="#374151">completed_at TIMESTAMPTZ</text>
+
+  <!-- run_steps -->
+  <rect x="30" y="250" width="220" height="210" rx="5" fill="#FFF7ED" stroke="#FCD34D" stroke-width="1.5"/>
+  <rect x="30" y="250" width="220" height="28" rx="5" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="140" y="269" font-size="12" font-weight="bold" fill="#92400E" text-anchor="middle">run_steps</text>
+  <text x="45" y="295" font-size="10.5" fill="#374151">id UUID PK</text>
+  <text x="45" y="311" font-size="10.5" fill="#374151">run_id UUID FK→runs</text>
+  <text x="45" y="327" font-size="10.5" fill="#374151">agent TEXT</text>
+  <text x="45" y="343" font-size="10.5" fill="#374151">status TEXT</text>
+  <text x="45" y="359" font-size="10.5" fill="#374151">tokens_in INT</text>
+  <text x="45" y="375" font-size="10.5" fill="#374151">tokens_out INT</text>
+  <text x="45" y="391" font-size="10.5" fill="#374151">cost_cents INT</text>
+  <text x="45" y="407" font-size="10.5" fill="#374151">output JSONB</text>
+  <text x="45" y="423" font-size="10.5" fill="#374151">started_at / completed_at</text>
+  <text x="45" y="439" font-size="10.5" fill="#9CA3AF">idx: run_id</text>
+
+  <!-- llm_calls -->
+  <rect x="280" y="270" width="220" height="190" rx="5" fill="#FDF4FF" stroke="#E879F9" stroke-width="1.5"/>
+  <rect x="280" y="270" width="220" height="28" rx="5" fill="#F5D0FE" stroke="#E879F9" stroke-width="1.5"/>
+  <text x="390" y="289" font-size="12" font-weight="bold" fill="#7E22CE" text-anchor="middle">llm_calls</text>
+  <text x="295" y="315" font-size="10.5" fill="#374151">id UUID PK</text>
+  <text x="295" y="331" font-size="10.5" fill="#374151">step_id UUID FK→run_steps</text>
+  <text x="295" y="347" font-size="10.5" fill="#374151">model TEXT</text>
+  <text x="295" y="363" font-size="10.5" fill="#374151">request_hash TEXT</text>
+  <text x="295" y="379" font-size="10.5" fill="#374151">tokens_in / tokens_out INT</text>
+  <text x="295" y="395" font-size="10.5" fill="#374151">cost_cents INT</text>
+  <text x="295" y="411" font-size="10.5" fill="#374151">response JSONB</text>
+  <text x="295" y="427" font-size="10.5" fill="#374151">called_at TIMESTAMPTZ</text>
+  <text x="295" y="443" font-size="10.5" fill="#9CA3AF">UNIQUE(step_id, request_hash)</text>
+
+  <!-- packets -->
+  <rect x="540" y="55" width="280" height="210" rx="5" fill="#FFF1F2" stroke="#FDA4AF" stroke-width="1.5"/>
+  <rect x="540" y="55" width="280" height="28" rx="5" fill="#FECDD3" stroke="#FDA4AF" stroke-width="1.5"/>
+  <text x="680" y="74" font-size="12" font-weight="bold" fill="#9F1239" text-anchor="middle">packets</text>
+  <text x="555" y="100" font-size="10.5" fill="#374151">id UUID PK</text>
+  <text x="555" y="116" font-size="10.5" fill="#374151">run_id UUID FK→runs</text>
+  <text x="555" y="132" font-size="10.5" fill="#374151">email JSONB</text>
+  <text x="555" y="148" font-size="10.5" fill="#374151">linkedin JSONB</text>
+  <text x="555" y="164" font-size="10.5" fill="#374151">agenda JSONB</text>
+  <text x="555" y="180" font-size="10.5" fill="#374151">send_sequence JSONB</text>
+  <text x="555" y="196" font-size="10.5" fill="#374151">research JSONB</text>
+  <text x="555" y="212" font-size="10.5" fill="#374151">tone_failed BOOLEAN</text>
+  <text x="555" y="228" font-size="10.5" fill="#374151">hubspot_campaign_id TEXT</text>
+  <text x="555" y="244" font-size="10.5" fill="#374151">assembled_at TIMESTAMPTZ</text>
+
+  <!-- FK lines -->
+  <!-- briefs → runs -->
+  <line x1="230" y1="120" x2="280" y2="120" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <!-- runs → run_steps -->
+  <line x1="310" y1="215" x2="200" y2="285" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <!-- run_steps → llm_calls -->
+  <line x1="250" y1="365" x2="280" y2="365" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <!-- runs → packets -->
+  <line x1="480" y1="135" x2="540" y2="135" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- Legend -->
+  <line x1="595" y1="435" x2="635" y2="435" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="645" y="439" font-size="10" fill="#6B7280">FK reference</text>
+</svg>

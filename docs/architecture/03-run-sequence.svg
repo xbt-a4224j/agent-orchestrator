@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 580" width="900" height="580" font-family="'Courier New', Courier, monospace">
+  <rect width="900" height="580" fill="#ffffff"/>
+  <text x="450" y="32" font-size="15" font-weight="bold" fill="#111" text-anchor="middle">Run Sequence (happy path)</text>
+
+  <!-- Swimlane headers -->
+  <rect x="30" y="50" width="120" height="30" rx="3" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
+  <text x="90" y="70" font-size="11" fill="#1D4ED8" text-anchor="middle" font-weight="bold">Browser</text>
+
+  <rect x="165" y="50" width="120" height="30" rx="3" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1"/>
+  <text x="225" y="70" font-size="11" fill="#15803D" text-anchor="middle" font-weight="bold">API Route</text>
+
+  <rect x="300" y="50" width="120" height="30" rx="3" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1"/>
+  <text x="360" y="70" font-size="11" fill="#15803D" text-anchor="middle" font-weight="bold">Orchestrator</text>
+
+  <rect x="435" y="50" width="120" height="30" rx="3" fill="#FEF9C3" stroke="#FDE047" stroke-width="1"/>
+  <text x="495" y="70" font-size="11" fill="#713F12" text-anchor="middle" font-weight="bold">Specialists</text>
+
+  <rect x="570" y="50" width="120" height="30" rx="3" fill="#FDF4FF" stroke="#E879F9" stroke-width="1"/>
+  <text x="630" y="70" font-size="11" fill="#7E22CE" text-anchor="middle" font-weight="bold">Anthropic API</text>
+
+  <rect x="705" y="50" width="120" height="30" rx="3" fill="#FFF7ED" stroke="#FCD34D" stroke-width="1"/>
+  <text x="765" y="70" font-size="11" fill="#92400E" text-anchor="middle" font-weight="bold">Postgres</text>
+
+  <!-- Lifelines -->
+  <line x1="90" y1="80" x2="90" y2="560" stroke="#93C5FD" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="225" y1="80" x2="225" y2="560" stroke="#86EFAC" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="360" y1="80" x2="360" y2="560" stroke="#86EFAC" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="495" y1="80" x2="495" y2="560" stroke="#FDE047" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="630" y1="80" x2="630" y2="560" stroke="#E879F9" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="765" y1="80" x2="765" y2="560" stroke="#FCD34D" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Step 1: POST /api/runs -->
+  <line x1="90" y1="110" x2="218" y2="110" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="155" y="106" font-size="9.5" fill="#374151" text-anchor="middle">POST /api/runs</text>
+
+  <!-- Step 2: insertBrief + insertRun -->
+  <line x1="225" y1="130" x2="758" y2="130" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="490" y="126" font-size="9.5" fill="#374151" text-anchor="middle">insertBrief · insertRun</text>
+
+  <!-- Step 3: return run_id -->
+  <line x1="218" y1="150" x2="90" y2="150" stroke="#374151" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+  <text x="155" y="146" font-size="9.5" fill="#374151" text-anchor="middle">{ run_id }</text>
+
+  <!-- Step 4: open EventSource -->
+  <line x1="90" y1="170" x2="218" y2="170" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="155" y="166" font-size="9.5" fill="#374151" text-anchor="middle">GET /stream (SSE)</text>
+
+  <!-- Step 5: orchestrator starts -->
+  <line x1="225" y1="195" x2="353" y2="195" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="290" y="191" font-size="9.5" fill="#374151" text-anchor="middle">runOrchestrator()</text>
+
+  <!-- Step 6: planner LLM call -->
+  <line x1="360" y1="215" x2="623" y2="215" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="490" y="211" font-size="9.5" fill="#374151" text-anchor="middle">planner LLM call</text>
+
+  <line x1="623" y1="230" x2="360" y2="230" stroke="#374151" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+  <text x="490" y="226" font-size="9.5" fill="#374151" text-anchor="middle">DAG JSON</text>
+
+  <!-- Step 7: fan out specialists -->
+  <rect x="353" y="248" width="150" height="18" rx="2" fill="#BBF7D0"/>
+  <text x="428" y="261" font-size="9" fill="#15803D" text-anchor="middle">Promise.all wave 2</text>
+
+  <line x1="360" y1="278" x2="488" y2="278" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="422" y="274" font-size="9.5" fill="#374151" text-anchor="middle">account_research</text>
+
+  <line x1="360" y1="295" x2="488" y2="295" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="422" y="291" font-size="9.5" fill="#374151" text-anchor="middle">contact_research</text>
+
+  <line x1="495" y1="312" x2="623" y2="312" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="558" y="308" font-size="9.5" fill="#374151" text-anchor="middle">LLM calls (×2)</text>
+
+  <line x1="623" y1="328" x2="495" y2="328" stroke="#374151" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+
+  <!-- Step 8: wave 3 -->
+  <rect x="353" y="345" width="150" height="18" rx="2" fill="#BBF7D0"/>
+  <text x="428" y="358" font-size="9" fill="#15803D" text-anchor="middle">Promise.all wave 3</text>
+
+  <line x1="360" y1="378" x2="488" y2="378" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="422" y="374" font-size="9.5" fill="#374151" text-anchor="middle">outreach/linkedin/agenda</text>
+
+  <line x1="495" y1="395" x2="623" y2="395" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="558" y="391" font-size="9.5" fill="#374151" text-anchor="middle">LLM calls (×3)</text>
+
+  <line x1="623" y1="411" x2="495" y2="411" stroke="#374151" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+
+  <!-- tone_checker -->
+  <line x1="360" y1="430" x2="488" y2="430" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="422" y="426" font-size="9.5" fill="#374151" text-anchor="middle">tone_checker</text>
+
+  <!-- appendStep to Postgres -->
+  <line x1="360" y1="450" x2="758" y2="450" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="560" y="446" font-size="9.5" fill="#374151" text-anchor="middle">appendStep · appendLLMCall (each step)</text>
+
+  <!-- assemblePacket -->
+  <line x1="360" y1="470" x2="758" y2="470" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="560" y="466" font-size="9.5" fill="#374151" text-anchor="middle">insertPacket · updateRunStatus</text>
+
+  <!-- SSE events back to browser -->
+  <line x1="225" y1="495" x2="97" y2="495" stroke="#374151" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+  <text x="160" y="491" font-size="9.5" fill="#374151" text-anchor="middle">SSE: step events</text>
+
+  <!-- Final fetch packet -->
+  <line x1="90" y1="520" x2="218" y2="520" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="155" y="516" font-size="9.5" fill="#374151" text-anchor="middle">GET /api/runs/:id</text>
+  <line x1="218" y1="535" x2="90" y2="535" stroke="#374151" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+  <text x="155" y="531" font-size="9.5" fill="#374151" text-anchor="middle">{ packet }</text>
+
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#374151"/>
+    </marker>
+  </defs>
+</svg>

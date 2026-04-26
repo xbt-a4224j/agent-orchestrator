@@ -3,6 +3,7 @@ import type { Dag } from "./dag";
 import type { Brief, Step, Run, StepStatus } from "./schemas";
 import { SpecialistError, LLMTransientError, ok, err, type Result } from "./errors";
 import type { OrchestratorEmitter } from "./events";
+import { log } from "./log";
 
 export type SpecialistInput = {
   brief: Brief;
@@ -40,6 +41,7 @@ export async function runOrchestrator(
     total_cost_cents: 0,
   };
 
+  log({ level: "info", event: "run.started", run_id });
   emitter.emit("event", { type: "run.started", run });
 
   const steps: Step[] = [];
@@ -85,6 +87,7 @@ export async function runOrchestrator(
         step.started_at = new Date().toISOString();
         steps.push(step);
         stepStatus[node.id] = "running";
+        log({ level: "info", event: "step.started", run_id, step_id: step.id, agent: node.agent });
         emitter.emit("event", { type: "step.started", step });
 
         const specialist = registry[node.agent];
@@ -113,12 +116,14 @@ export async function runOrchestrator(
           outputs[node.id] = result.value;
           completed.add(node.id);
           stepStatus[node.id] = "succeeded";
+          log({ level: "info", event: "step.succeeded", run_id, step_id: step.id, agent: node.agent });
           emitter.emit("event", { type: "step.succeeded", step });
         } else {
           step.status = "failed";
           step.error = { code: result.error.code, message: result.error.message };
           failed.add(node.id);
           stepStatus[node.id] = "failed";
+          log({ level: "error", event: "step.failed", run_id, step_id: step.id, agent: node.agent, error: result.error.message });
           emitter.emit("event", { type: "step.failed", step });
         }
       })
@@ -133,6 +138,7 @@ export async function runOrchestrator(
     total_cost_cents: 0,
   };
 
+  log({ level: failed.size === 0 ? "info" : "error", event: failed.size === 0 ? "run.completed" : "run.failed", run_id, status: completedRun.status });
   emitter.emit("event", {
     type: failed.size === 0 ? "run.completed" : "run.failed",
     run: completedRun,
