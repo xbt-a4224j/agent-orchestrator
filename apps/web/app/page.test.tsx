@@ -3,7 +3,7 @@
  * The main bug: GET /api/runs/:id returns { packet: PacketRow } but the page
  * was passing packet (PacketRow) directly to PacketView instead of packet.content (Packet).
  */
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import Home from "./page";
 
