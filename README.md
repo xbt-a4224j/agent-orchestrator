@@ -6,7 +6,7 @@ A typed multi-agent orchestrator for B2B outreach campaigns.
 
 A planner decomposes a structured brief into specialist tasks. Specialists execute in parallel against shared research. A coordinator validates and merges results into a coordinated multi-channel outreach packet. Every LLM call is recorded so any run is bit-for-bit replayable from its event log.
 
-**[Live demo →](https://agent-orchestrator.vercel.app)**
+**[Live demo →](https://agent-orchestrator.vercel.app)** · [Inspect on Vercel](https://vercel.com/alex42johnson-1252s-projects/agent-orchestrator)
 
 ---
 
