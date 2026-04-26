@@ -83,7 +83,7 @@ export async function executeRun(brief: Brief, runId: string, emitter: Orchestra
   const startedAt = Date.now();
   const result = await runOrchestrator(brief, dag, registry, emitter, runId);
 
-  const totalCost = result.steps.reduce((sum, s) => sum + (s.cost_cents ?? 0), 0);
+  const totalCost = llm.totalCostCents;
   await updateRunStatus(db, runId, result.run.status, totalCost);
 
   if (result.run.status === "succeeded") {
