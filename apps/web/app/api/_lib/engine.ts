@@ -41,6 +41,18 @@ export async function executeRun(brief: Brief, runId: string, emitter: Orchestra
 
   await db`UPDATE runs SET status = 'running' WHERE id = ${runId}`;
 
+  // Persist each step to DB as it completes so SSE polling sees real-time progress
+  emitter.on("event", (event) => {
+    if (event.type === "step.started" || event.type === "step.succeeded" || event.type === "step.failed") {
+      void appendStep(db, {
+        ...event.step,
+        tokens_in: event.step.tokens_in ?? 0,
+        tokens_out: event.step.tokens_out ?? 0,
+        cost_cents: event.step.cost_cents ?? 0,
+      });
+    }
+  });
+
   const dag = await plan(brief, llm).then((r) => (r.ok ? r.value : DEFAULT_DAG));
 
   const registry: SpecialistRegistry = {
@@ -71,20 +83,9 @@ export async function executeRun(brief: Brief, runId: string, emitter: Orchestra
   const startedAt = Date.now();
   const result = await runOrchestrator(brief, dag, registry, emitter, runId);
 
-  // Persist steps
-  for (const step of result.steps) {
-    await appendStep(db, {
-      ...step,
-      tokens_in: step.tokens_in ?? 0,
-      tokens_out: step.tokens_out ?? 0,
-      cost_cents: step.cost_cents ?? 0,
-    });
-  }
-
   const totalCost = result.steps.reduce((sum, s) => sum + (s.cost_cents ?? 0), 0);
   await updateRunStatus(db, runId, result.run.status, totalCost);
 
-  // Assemble and persist packet if succeeded
   if (result.run.status === "succeeded") {
     const packet = assemblePacket(
       {
