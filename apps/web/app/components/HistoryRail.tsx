@@ -88,6 +88,7 @@ export default function HistoryRail({ currentRunId, onSelect }: HistoryRailProps
           </button>
         ))}
       </div>
+
     </div>
   );
 }

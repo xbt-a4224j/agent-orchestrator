@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import BriefForm from "./components/BriefForm";
 import RunView from "./components/RunView";
 import RunCompleteView from "./components/RunCompleteView";
@@ -104,7 +105,13 @@ export default function Home() {
     <div className="flex min-h-screen bg-slate-50">
       <HistoryRail currentRunId={runId} onSelect={handleSelectRun} />
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto relative">
+        <Link
+          href="/admin"
+          className="absolute top-4 right-6 text-xs text-slate-400 hover:text-slate-600 transition-colors z-10"
+        >
+          Admin →
+        </Link>
         {pageState === "idle" && (
           <BriefForm onSubmit={handleRunStart} />
         )}
