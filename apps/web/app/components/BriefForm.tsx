@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { Brief, Playbook } from "@agent-orchestrator/engine";
-import { PLAYBOOK_LABELS } from "@agent-orchestrator/engine";
+import type { Brief, Playbook } from "@agent-orchestrator/engine/client";
+import { PLAYBOOK_LABELS } from "@agent-orchestrator/engine/client";
 import { SAMPLE_BRIEFS } from "./SampleBriefs";
 
 interface BriefFormProps {

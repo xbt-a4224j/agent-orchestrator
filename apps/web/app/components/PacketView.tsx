@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { Packet } from "@agent-orchestrator/engine";
-import { PLAYBOOK_LABELS } from "@agent-orchestrator/engine";
+import type { Packet } from "@agent-orchestrator/engine/client";
+import { PLAYBOOK_LABELS } from "@agent-orchestrator/engine/client";
 
 interface PacketViewProps {
   packet: Packet;
