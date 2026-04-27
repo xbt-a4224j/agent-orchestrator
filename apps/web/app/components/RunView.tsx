@@ -13,21 +13,23 @@ interface RunViewProps {
 }
 
 export default function RunView({ runId, events, status, totalCostCents }: RunViewProps) {
+  const isRunning = status !== "completed" && status !== "failed";
+
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-3xl mx-auto px-6 py-10">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-xl font-bold text-white">Run in progress</h2>
-          <p className="text-xs text-gray-500 font-mono mt-0.5">{runId}</p>
+          <h2 className="text-xl font-semibold text-slate-900">
+            {isRunning ? "Agents running…" : status === "failed" ? "Run failed" : "Agents complete"}
+          </h2>
+          <p className="text-xs text-slate-400 font-mono mt-1">{runId}</p>
         </div>
-        <div className={`text-xs px-2 py-1 rounded ${
-          status === "completed"
-            ? "bg-green-900/50 text-green-300"
-            : status === "failed"
-              ? "bg-red-900/50 text-red-300"
-              : "bg-yellow-900/50 text-yellow-300"
+        <div className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+          status === "completed" ? "bg-emerald-100 text-emerald-700"
+          : status === "failed"  ? "bg-red-100 text-red-600"
+          : "bg-blue-100 text-blue-600"
         }`}>
-          {status}
+          {isRunning ? "In progress" : status}
         </div>
       </div>
 
@@ -35,7 +37,7 @@ export default function RunView({ runId, events, status, totalCostCents }: RunVi
         <div className="col-span-2">
           <RunTree events={events} />
         </div>
-        <div className="space-y-4">
+        <div>
           <CostTicker targetCents={totalCostCents} />
         </div>
       </div>

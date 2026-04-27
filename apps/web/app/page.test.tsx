@@ -54,7 +54,7 @@ describe("Home page — handleSelectRun", () => {
     // by triggering a run submission that returns a run_id, then the SSE marks it complete
     // The simpler path: trigger a POST that returns a run_id
     // Idle state renders the form with the submit button
-    const briefForm = screen.getByRole("button", { name: /Run Orchestrator/i });
+    const briefForm = screen.getByRole("button", { name: /Generate campaign/i });
     expect(briefForm).toBeTruthy();
   });
 

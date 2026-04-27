@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import BriefForm from "./components/BriefForm";
 import RunView from "./components/RunView";
+import RunCompleteView from "./components/RunCompleteView";
 import PacketView from "./components/PacketView";
 import HistoryRail from "./components/HistoryRail";
 import { useRunStream } from "./hooks/useRunStream";
 import type { Packet } from "@agent-orchestrator/engine";
 
-type PageState = "idle" | "running" | "complete";
+type PageState = "idle" | "running" | "done" | "complete";
 
 interface RunData {
   run: { id: string; status: string; total_cost_cents: number };
@@ -20,29 +21,47 @@ export default function Home() {
   const [runId, setRunId] = useState<string | null>(null);
   const [packetData, setPacketData] = useState<Packet | null>(null);
   const [hubspotId, setHubspotId] = useState<string | null>(null);
+  const [runStartedAt, setRunStartedAt] = useState<number>(Date.now());
 
   const { events, status, totalCostCents } = useRunStream(
     pageState === "running" ? runId : null
   );
 
-  // Transition to complete when stream says done
+  // When stream says done, move to "done" intermediate view and quietly prefetch the packet
   useEffect(() => {
-    if (status === "completed" && runId) {
-      void fetchAndComplete(runId);
+    if (status === "completed" && runId && pageState === "running") {
+      setPageState("done");
+      void prefetchPacket(runId);
     }
-  }, [status, runId]);
+  }, [status, runId, pageState]);
 
-  async function fetchAndComplete(id: string) {
+  async function prefetchPacket(id: string) {
     try {
       const res = await fetch(`/api/runs/${id}`);
       const data = await res.json() as RunData;
       if (data.packet) {
         setPacketData(data.packet.content);
         setHubspotId(data.packet.hubspot_campaign_id ?? null);
-        setPageState("complete");
       }
     } catch {
-      // stay on running view
+      // packet will be fetched again on CTA click
+    }
+  }
+
+  async function handleViewPacket() {
+    if (packetData) {
+      setPageState("complete");
+      return;
+    }
+    // Fallback: fetch if prefetch missed
+    if (runId) {
+      const res = await fetch(`/api/runs/${runId}`);
+      const data = await res.json() as RunData;
+      if (data.packet) {
+        setPacketData(data.packet.content);
+        setHubspotId(data.packet.hubspot_campaign_id ?? null);
+      }
+      setPageState("complete");
     }
   }
 
@@ -50,6 +69,7 @@ export default function Home() {
     setRunId(id);
     setPacketData(null);
     setHubspotId(null);
+    setRunStartedAt(Date.now());
     setPageState("running");
   }
 
@@ -78,8 +98,10 @@ export default function Home() {
     }
   }
 
+  const durationMs = Date.now() - runStartedAt;
+
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-slate-50">
       <HistoryRail currentRunId={runId} onSelect={handleSelectRun} />
 
       <main className="flex-1 overflow-y-auto">
@@ -93,6 +115,16 @@ export default function Home() {
             events={events}
             status={status}
             totalCostCents={totalCostCents}
+          />
+        )}
+
+        {pageState === "done" && runId && (
+          <RunCompleteView
+            runId={runId}
+            events={events}
+            totalCostCents={totalCostCents}
+            durationMs={durationMs}
+            onViewPacket={handleViewPacket}
           />
         )}
 

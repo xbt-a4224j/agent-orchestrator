@@ -28,20 +28,17 @@ export default function CostTicker({ targetCents }: CostTickerProps) {
 
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, [targetCents]);
 
   const dollars = (displayCents / 100).toFixed(4);
 
   return (
-    <div className="text-center">
-      <div className="text-3xl font-mono font-bold text-green-400 tabular-nums">
+    <div className="card p-4 text-center">
+      <div className="text-2xl font-semibold tabular-nums text-slate-800">
         ${dollars}
       </div>
-      <div className="text-xs text-gray-500 mt-1">estimated cost</div>
+      <div className="text-xs text-slate-400 mt-1 font-medium uppercase tracking-wide">Estimated cost</div>
     </div>
   );
 }

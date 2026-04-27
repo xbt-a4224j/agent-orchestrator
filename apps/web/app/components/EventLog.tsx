@@ -3,15 +3,15 @@
 import { useEffect, useRef } from "react";
 import type { OrchestratorEvent } from "@agent-orchestrator/engine";
 
-function formatEvent(event: OrchestratorEvent): string {
+function formatEvent(event: OrchestratorEvent): { text: string; style: string } {
   switch (event.type) {
-    case "run.started": return `▶ run started`;
-    case "run.completed": return `✓ run completed`;
-    case "run.failed": return `✗ run failed`;
-    case "step.started": return `  → ${event.step.agent}: started`;
-    case "step.succeeded": return `  ✓ ${event.step.agent}: done`;
-    case "step.failed": return `  ✗ ${event.step.agent}: failed`;
-    default: return JSON.stringify(event);
+    case "run.started":    return { text: "Run started", style: "text-blue-600" };
+    case "run.completed":  return { text: "Run completed", style: "text-emerald-600 font-medium" };
+    case "run.failed":     return { text: "Run failed", style: "text-red-500 font-medium" };
+    case "step.started":   return { text: `${event.step.agent} — started`, style: "text-slate-500" };
+    case "step.succeeded": return { text: `${event.step.agent} — done`, style: "text-emerald-600" };
+    case "step.failed":    return { text: `${event.step.agent} — failed`, style: "text-red-500" };
+    default:               return { text: JSON.stringify(event), style: "text-slate-400" };
   }
 }
 
@@ -27,15 +27,18 @@ export default function EventLog({ events }: EventLogProps) {
   }, [events.length]);
 
   return (
-    <div className="h-48 overflow-y-auto bg-gray-950 border border-gray-800 rounded-lg p-3 font-mono text-xs">
+    <div className="card h-40 overflow-y-auto p-3 text-xs">
       {events.length === 0 && (
-        <span className="text-gray-600">Waiting for events…</span>
+        <span className="text-slate-300">Waiting for agent events…</span>
       )}
-      {events.map((event, i) => (
-        <div key={i} className="text-gray-400 leading-5">
-          {formatEvent(event)}
-        </div>
-      ))}
+      {events.map((event, i) => {
+        const { text, style } = formatEvent(event);
+        return (
+          <div key={i} className={`leading-5 ${style}`}>
+            {text}
+          </div>
+        );
+      })}
       <div ref={bottomRef} />
     </div>
   );

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Agent Orchestrator",
-  description: "Typed multi-agent orchestrator for B2B outreach campaigns",
+  title: "Quotient",
+  description: "AI-powered multi-channel outreach campaigns",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-gray-950 text-gray-100 min-h-screen font-mono">
+      <body className="bg-slate-50 text-slate-900 min-h-screen antialiased">
         {children}
       </body>
     </html>

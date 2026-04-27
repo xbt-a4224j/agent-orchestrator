@@ -10,11 +10,11 @@ interface BriefFormProps {
 }
 
 const PLAYBOOKS: { value: Playbook; label: string; description: string }[] = [
-  { value: "abm_outbound", label: PLAYBOOK_LABELS.abm_outbound, description: "Research + personalized multi-channel outreach to a target account" },
+  { value: "abm_outbound",           label: PLAYBOOK_LABELS.abm_outbound,           description: "Research + personalized multi-channel outreach to a target account" },
   { value: "competitive_displacement", label: PLAYBOOK_LABELS.competitive_displacement, description: "Lead with their current stack — position as the consolidation play" },
-  { value: "thought_leadership", label: PLAYBOOK_LABELS.thought_leadership, description: "Peer-to-peer, no pitch — build a relationship before a pipeline" },
-  { value: "event_followup", label: PLAYBOOK_LABELS.event_followup, description: "Warm follow-up from a shared event, webinar, or conference" },
-  { value: "reactivation", label: PLAYBOOK_LABELS.reactivation, description: "Re-engage a cold or churned account with new context" },
+  { value: "thought_leadership",     label: PLAYBOOK_LABELS.thought_leadership,     description: "Peer-to-peer, no pitch — build a relationship before a pipeline" },
+  { value: "event_followup",         label: PLAYBOOK_LABELS.event_followup,         description: "Warm follow-up from a shared event, webinar, or conference" },
+  { value: "reactivation",           label: PLAYBOOK_LABELS.reactivation,           description: "Re-engage a cold or churned account with new context" },
 ];
 
 export default function BriefForm({ onSubmit }: BriefFormProps) {
@@ -65,30 +65,37 @@ export default function BriefForm({ onSubmit }: BriefFormProps) {
   const selectedPlaybook = PLAYBOOKS.find((p) => p.value === brief.playbook);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white mb-1">Quotient</h1>
-        <p className="text-gray-300 text-sm mb-2">Give it a target account — it researches, writes, and plans a coordinated outreach campaign in under 60 seconds.</p>
-        <p className="text-gray-600 text-xs">Planner → account research → contact research → email + LinkedIn + agenda → coordinated packet</p>
+    <div className="max-w-2xl mx-auto px-6 py-12">
+      {/* Header */}
+      <div className="mb-10">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+            <span className="text-white text-sm font-bold">Q</span>
+          </div>
+          <h1 className="text-xl font-semibold text-slate-900">Quotient</h1>
+        </div>
+        <p className="text-slate-600 text-sm leading-relaxed">
+          Give it a target account — it researches, writes, and plans a coordinated outreach campaign in under 60 seconds.
+        </p>
       </div>
 
+      {/* Sample presets */}
       <div className="mb-6 flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-gray-500">Try a sample:</span>
+        <span className="text-xs text-slate-400 font-medium">Try a sample:</span>
         {Object.entries(SAMPLE_BRIEFS).map(([key, { label }]) => (
           <button
             key={key}
             type="button"
             onClick={() => applyPreset(key)}
-            className="text-xs px-2 py-1 rounded bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors"
+            className="text-xs px-2.5 py-1 rounded-full bg-white border border-slate-300 text-slate-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
           >
             {label}
           </button>
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <fieldset className="border border-gray-800 rounded-lg p-4 space-y-3">
-          <legend className="text-xs text-gray-500 px-1 uppercase tracking-wider">Campaign</legend>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <Section legend="Campaign">
           <Field label="Playbook">
             <select
               className="input"
@@ -100,7 +107,7 @@ export default function BriefForm({ onSubmit }: BriefFormProps) {
               ))}
             </select>
             {selectedPlaybook && (
-              <p className="text-xs text-gray-600 mt-1">{selectedPlaybook.description}</p>
+              <p className="text-xs text-slate-400 mt-1.5">{selectedPlaybook.description}</p>
             )}
           </Field>
           <Field label="ICP signals">
@@ -119,46 +126,48 @@ export default function BriefForm({ onSubmit }: BriefFormProps) {
               placeholder="Peer-to-peer tone. No hyperbole. Under 100 words."
             />
           </Field>
-        </fieldset>
+        </Section>
 
-        <fieldset className="border border-gray-800 rounded-lg p-4 space-y-3">
-          <legend className="text-xs text-gray-500 px-1 uppercase tracking-wider">Target</legend>
-          <Field label="Account name" required>
-            <input
-              className="input"
-              value={brief.target_account.name}
-              onChange={(e) => update(["target_account", "name"], e.target.value)}
-              required
-            />
-          </Field>
-          <Field label="Domain">
-            <input
-              className="input"
-              value={brief.target_account.domain ?? ""}
-              onChange={(e) => update(["target_account", "domain"], e.target.value)}
-              placeholder="notion.so"
-            />
-          </Field>
-          <Field label="Persona role" required>
-            <input
-              className="input"
-              value={brief.persona.role}
-              onChange={(e) => update(["persona", "role"], e.target.value)}
-              required
-            />
-          </Field>
-          <Field label="Seniority">
-            <input
-              className="input"
-              value={brief.persona.seniority ?? ""}
-              onChange={(e) => update(["persona", "seniority"], e.target.value)}
-              placeholder="VP, Director, C-Level…"
-            />
-          </Field>
-        </fieldset>
+        <Section legend="Target account">
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Company name" required>
+              <input
+                className="input"
+                value={brief.target_account.name}
+                onChange={(e) => update(["target_account", "name"], e.target.value)}
+                required
+              />
+            </Field>
+            <Field label="Domain">
+              <input
+                className="input"
+                value={brief.target_account.domain ?? ""}
+                onChange={(e) => update(["target_account", "domain"], e.target.value)}
+                placeholder="notion.so"
+              />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Persona role" required>
+              <input
+                className="input"
+                value={brief.persona.role}
+                onChange={(e) => update(["persona", "role"], e.target.value)}
+                required
+              />
+            </Field>
+            <Field label="Seniority">
+              <input
+                className="input"
+                value={brief.persona.seniority ?? ""}
+                onChange={(e) => update(["persona", "seniority"], e.target.value)}
+                placeholder="VP, Director, C-Level…"
+              />
+            </Field>
+          </div>
+        </Section>
 
-        <fieldset className="border border-gray-800 rounded-lg p-4 space-y-3">
-          <legend className="text-xs text-gray-500 px-1 uppercase tracking-wider">Offer</legend>
+        <Section legend="Offer">
           <Field label="Product" required>
             <input
               className="input"
@@ -175,38 +184,39 @@ export default function BriefForm({ onSubmit }: BriefFormProps) {
               required
             />
           </Field>
-        </fieldset>
+        </Section>
 
-        <fieldset className="border border-gray-800 rounded-lg p-4 space-y-3">
-          <legend className="text-xs text-gray-500 px-1 uppercase tracking-wider">Sender</legend>
-          <Field label="Your name" required>
-            <input
-              className="input"
-              value={brief.sender.name}
-              onChange={(e) => update(["sender", "name"], e.target.value)}
-              required
-            />
-          </Field>
-          <Field label="Company" required>
-            <input
-              className="input"
-              value={brief.sender.company}
-              onChange={(e) => update(["sender", "company"], e.target.value)}
-              required
-            />
-          </Field>
-          <Field label="Role" required>
-            <input
-              className="input"
-              value={brief.sender.role}
-              onChange={(e) => update(["sender", "role"], e.target.value)}
-              required
-            />
-          </Field>
-        </fieldset>
+        <Section legend="Sender">
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Your name" required>
+              <input
+                className="input"
+                value={brief.sender.name}
+                onChange={(e) => update(["sender", "name"], e.target.value)}
+                required
+              />
+            </Field>
+            <Field label="Company" required>
+              <input
+                className="input"
+                value={brief.sender.company}
+                onChange={(e) => update(["sender", "company"], e.target.value)}
+                required
+              />
+            </Field>
+            <Field label="Role" required>
+              <input
+                className="input"
+                value={brief.sender.role}
+                onChange={(e) => update(["sender", "role"], e.target.value)}
+                required
+              />
+            </Field>
+          </div>
+        </Section>
 
         {error && (
-          <p className="text-red-400 text-sm bg-red-950/30 border border-red-900 rounded px-3 py-2">
+          <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-md px-3 py-2">
             {error}
           </p>
         )}
@@ -214,11 +224,20 @@ export default function BriefForm({ onSubmit }: BriefFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium transition-colors"
+          className="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium text-sm transition-colors"
         >
-          {loading ? "Starting run…" : "Run Orchestrator →"}
+          {loading ? "Starting…" : "Generate campaign →"}
         </button>
       </form>
+    </div>
+  );
+}
+
+function Section({ legend, children }: { legend: string; children: React.ReactNode }) {
+  return (
+    <div className="card p-5 space-y-4">
+      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{legend}</div>
+      {children}
     </div>
   );
 }
@@ -226,8 +245,8 @@ export default function BriefForm({ onSubmit }: BriefFormProps) {
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-xs text-gray-400 mb-1">
-        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
+      <label className="block text-xs font-medium text-slate-600 mb-1.5">
+        {label}{required && <span className="text-red-400 ml-0.5">*</span>}
       </label>
       {children}
     </div>
