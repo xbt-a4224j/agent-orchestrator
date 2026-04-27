@@ -134,6 +134,7 @@ export const ContactResearchSchema = z.object({
 
 export const PacketSchema = z.object({
   run_id: z.string().uuid(),
+  brief: BriefSchema.optional(),
   email: EmailArtifactSchema,
   linkedin_note: LinkedinArtifactSchema,
   discovery_agenda: AgendaArtifactSchema,

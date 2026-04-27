@@ -15,6 +15,8 @@ export * from "./specialists/outreach_writer";
 export * from "./specialists/linkedin_writer";
 export * from "./specialists/agenda_writer";
 export * from "./specialists/tone_checker";
+export * from "./specialists/battlecard";
+export * from "./specialists/reply_simulator";
 export * from "./integrations/enrichment.mock";
 export * from "./integrations/hubspot.mock";
 export * from "./integrations/resend.mock";

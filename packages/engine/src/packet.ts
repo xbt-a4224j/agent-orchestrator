@@ -86,6 +86,7 @@ export function assemblePacket(
 
   return {
     run_id: run.id,
+    brief,
     email: outputs.outreach_writer,
     linkedin_note: outputs.linkedin_writer,
     discovery_agenda: outputs.agenda_writer,
