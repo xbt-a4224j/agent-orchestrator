@@ -211,7 +211,10 @@ export default function PacketView({ packet, runId, initialHubspotId, onNewCampa
 
             {/* Reply simulator */}
             <div className="border-t border-gray-800 pt-4 mt-4">
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">Simulate a reply</div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-xs text-gray-400 font-medium">How does {cr.name} reply?</div>
+                <div className="text-xs text-gray-600">AI simulates the contact + generates your follow-up</div>
+              </div>
               <div className="flex gap-2 mb-4">
                 {(["positive", "neutral", "objection"] as const).map((s) => (
                   <button
@@ -280,7 +283,10 @@ export default function PacketView({ packet, runId, initialHubspotId, onNewCampa
         {/* ── Send sequence tab — campaign runner ── */}
         {tab === "Send sequence" && (
           <div className="space-y-3">
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Campaign runner</div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-xs text-gray-500 uppercase tracking-wider">Campaign runner</div>
+              <div className="text-xs text-gray-600">Mark each step sent to advance the cadence</div>
+            </div>
             {packet.send_sequence.steps.map((step, i) => {
               const state = stepStates[i] ?? { status: "pending" };
               const isActive = state.status === "pending" && (i === 0 || stepStates[i - 1]?.status === "sent" || stepStates[i - 1]?.status === "replied" || stepStates[i - 1]?.status === "no_reply");
@@ -389,19 +395,20 @@ export default function PacketView({ packet, runId, initialHubspotId, onNewCampa
               </div>
 
               <div className="mb-2">
-                <div className="text-xs text-gray-600 mb-1.5">
+                <div className="text-xs text-gray-400 font-medium mb-1.5">
                   Current marketing stack
-                  <span className="text-gray-700 ml-2">— click any tool for a displacement battlecard</span>
+                  <span className="text-gray-600 ml-2 font-normal">— ⚡ click any tool for a live battlecard</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {ar.marketing_stack.map((tool) => (
                     <button
                       key={tool}
                       onClick={() => fetchBattlecard(tool)}
-                      className={`px-2 py-0.5 rounded text-xs border transition-colors ${
+                      title={`Generate displacement battlecard for ${tool}`}
+                      className={`px-2 py-0.5 rounded text-xs border transition-colors cursor-pointer ${
                         battlecardTool === tool
                           ? "bg-orange-900/40 border-orange-700/60 text-orange-300"
-                          : "bg-gray-800 border-gray-700 text-gray-400 hover:border-orange-700/50 hover:text-orange-300"
+                          : "bg-gray-800 border-gray-700 text-gray-400 hover:border-orange-700/50 hover:text-orange-300 hover:bg-orange-950/20"
                       }`}
                     >
                       {tool}

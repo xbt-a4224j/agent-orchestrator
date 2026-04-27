@@ -67,8 +67,9 @@ export default function BriefForm({ onSubmit }: BriefFormProps) {
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white mb-1">Agent Orchestrator</h1>
-        <p className="text-gray-400 text-sm">Typed multi-agent campaign engine — planner → research → writers → coordinated packet</p>
+        <h1 className="text-2xl font-bold text-white mb-1">Quotient</h1>
+        <p className="text-gray-300 text-sm mb-2">Give it a target account — it researches, writes, and plans a coordinated outreach campaign in under 60 seconds.</p>
+        <p className="text-gray-600 text-xs">Planner → account research → contact research → email + LinkedIn + agenda → coordinated packet</p>
       </div>
 
       <div className="mb-6 flex items-center gap-2 flex-wrap">

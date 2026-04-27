@@ -62,8 +62,23 @@ export async function getRun(db: DbClient, runId: string): Promise<RunRow | null
   return row ?? null;
 }
 
-export async function listRuns(db: DbClient, limit = 10): Promise<RunRow[]> {
-  return db<RunRow[]>`SELECT * FROM runs ORDER BY started_at DESC LIMIT ${limit}`;
+export interface RunSummaryRow extends RunRow {
+  target_account?: string;
+  playbook?: string;
+}
+
+export async function listRuns(db: DbClient, limit = 10): Promise<RunSummaryRow[]> {
+  return db<RunSummaryRow[]>`
+    SELECT
+      r.*,
+      b.payload->>'target_account' AS target_account_raw,
+      b.payload->'target_account'->>'name' AS target_account,
+      b.payload->>'playbook' AS playbook
+    FROM runs r
+    LEFT JOIN briefs b ON b.id = r.brief_id
+    ORDER BY r.started_at DESC
+    LIMIT ${limit}
+  `;
 }
 
 // ── Run Steps ─────────────────────────────────────────────────────────────────
