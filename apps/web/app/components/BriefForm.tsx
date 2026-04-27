@@ -70,9 +70,9 @@ export default function BriefForm({ onSubmit }: BriefFormProps) {
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-            <span className="text-white text-sm font-bold">P</span>
+            <span className="text-white text-sm font-bold">O</span>
           </div>
-          <h1 className="text-xl font-semibold text-slate-900">Prism</h1>
+          <h1 className="text-xl font-semibold text-slate-900">Outpost</h1>
         </div>
         <p className="text-slate-600 text-sm leading-relaxed">
           Give it a target account — it researches, writes, and plans a coordinated outreach campaign in under 60 seconds.
