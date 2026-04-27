@@ -10,9 +10,9 @@ import type { ContactResearch } from "../src/specialists/contact_research";
 const brief = {
   target_account: { name: "Notion", domain: "notion.so" },
   persona: { role: "VP of Marketing" },
-  offer: { product: "Acme CRM", value_prop: "Cuts outreach time by 60%" },
-  sender: { name: "Alex", company: "Acme", role: "AE" },
-  goal: "book_meeting" as const,
+  offer: { product: "Quotient", value_prop: "One AI agent for the full campaign lifecycle" },
+  sender: { name: "Alex", company: "Quotient", role: "AE" },
+  playbook: "abm_outbound" as const,
 };
 
 const accountResearch: AccountResearch = {
@@ -22,6 +22,9 @@ const accountResearch: AccountResearch = {
   employees: 400,
   pain_points_hypothesis: ["Scaling", "Adoption"],
   recent_news: ["Launched Notion AI"],
+  marketing_stack: ["Marketo", "Salesforce"],
+  icp_fit_signals: ["Series C", "Hiring marketing ops"],
+  competitive_displacement_angle: "Replaces Marketo campaigns and Salesforce sequences.",
 };
 
 const contactResearch: ContactResearch = {
@@ -31,6 +34,8 @@ const contactResearch: ContactResearch = {
   linkedin_url: "https://linkedin.com/in/sarah-chen",
   pain_points: ["Scaling outbound", "Proving ROI"],
   communication_tips: ["Lead with data"],
+  champion_hypothesis: "Would champion Quotient to consolidate the martech stack and demonstrate strategic leverage.",
+  buying_trigger: "Headcount freeze forcing the team to do more with less.",
 };
 
 function mockLLM(output: string, succeed = true): ILLMClient {
@@ -48,7 +53,7 @@ describe("outreach_writer", () => {
   it("happy path returns valid email", async () => {
     const emailJson = JSON.stringify({
       subject: "Quick question Sarah",
-      preview: "Notion + Acme collaboration",
+      preview: "Notion + Quotient",
       body: "Hi Sarah, noticed Notion AI launch...",
     });
     const result = await runOutreachWriter(brief, accountResearch, contactResearch, mockLLM(emailJson));
@@ -64,6 +69,14 @@ describe("outreach_writer", () => {
     await runOutreachWriter(brief, accountResearch, contactResearch, mockLLMInst, "Too pushy");
     const callArg = (mockLLMInst.call as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string;
     expect(callArg).toContain("Too pushy");
+  });
+
+  it("competitive_displacement playbook includes displacement angle in prompt", async () => {
+    const dispBrief = { ...brief, playbook: "competitive_displacement" as const };
+    const mockLLMInst = mockLLM(JSON.stringify({ subject: "s", preview: "p", body: "b" }));
+    await runOutreachWriter(dispBrief, accountResearch, contactResearch, mockLLMInst);
+    const callArg = (mockLLMInst.call as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string;
+    expect(callArg).toContain("Displacement angle");
   });
 
   it("returns SpecialistError on LLM failure", async () => {
@@ -100,7 +113,7 @@ describe("linkedin_writer", () => {
 describe("agenda_writer", () => {
   it("happy path returns valid agenda", async () => {
     const agendaJson = JSON.stringify({
-      title: "Discovery: Acme × Notion",
+      title: "Discovery: Quotient × Notion",
       duration_minutes: 25,
       talking_points: ["Current priorities?", "Pain with scale?", "Success metrics?"],
     });

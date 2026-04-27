@@ -12,6 +12,21 @@ export const OutreachEmailSchema = z.object({
 });
 export type OutreachEmail = z.infer<typeof OutreachEmailSchema>;
 
+function playbookHook(brief: Brief, ar: AccountResearch, cr: ContactResearch): string {
+  switch (brief.playbook) {
+    case "competitive_displacement":
+      return `Displacement angle: ${ar.competitive_displacement_angle} Lead with this — not a generic pitch. Show you know their stack.`;
+    case "thought_leadership":
+      return `This is a thought leadership play. No pitch in the first touch. Peer-to-peer curiosity only. Reference a real trend or challenge in ${ar.industry}. The goal is a reply, not a meeting ask.`;
+    case "event_followup":
+      return `This is a post-event follow-up. Reference a shared context (conference, webinar, or mutual connection). Make it feel like a warm continuation, not cold outreach.`;
+    case "reactivation":
+      return `This is an account reactivation. They've gone cold. Acknowledge the gap implicitly with something new — a product update, case study, or insight that's changed since the last touch. Don't re-pitch from scratch.`;
+    default:
+      return `This is an ABM outbound play. Lead with a specific account insight: ${ar.summary.split(".")[0]}.`;
+  }
+}
+
 export async function runOutreachWriter(
   brief: Brief,
   accountResearch: AccountResearch,
@@ -23,23 +38,33 @@ export async function runOutreachWriter(
     ? `\nTone feedback from previous review (must address): ${feedback}\n`
     : "";
 
-  const prompt = `You are a B2B copywriter writing a cold outreach email.${feedbackSection}
+  const hook = playbookHook(brief, accountResearch, contactResearch);
+
+  const prompt = `You are a B2B copywriter. Write a cold outreach email that doesn't sound like one.${feedbackSection}
 
 Sender: ${brief.sender.name}, ${brief.sender.role} at ${brief.sender.company}
 Recipient: ${contactResearch.name}, ${contactResearch.role} at ${accountResearch.company_name}
 Product: ${brief.offer.product}
 Value prop: ${brief.offer.value_prop}
-Goal: ${brief.goal ?? "book_meeting"}
 
 Account context: ${accountResearch.summary}
 Contact context: ${contactResearch.summary}
-Pain points to address: ${contactResearch.pain_points.slice(0, 2).join(", ")}
+Buying trigger: ${contactResearch.buying_trigger}
+Top pain points: ${contactResearch.pain_points.slice(0, 2).join(", ")}
 
-Write a concise cold email (under 150 words). No fluff. Peer-to-peer tone. Lead with insight, not pitch.
+Playbook direction: ${hook}
+
+Rules:
+- Under 120 words in the body
+- No fluff, no "hope this finds you well"
+- One specific insight, one question or offer
+- Peer-to-peer tone — rep to peer, not vendor to buyer
+- End with a soft CTA (open question or "worth 15 minutes?")
+${brief.constraints ? `- Constraints: ${brief.constraints}` : ""}
 
 Respond with ONLY a JSON object:
 {
-  "subject": "<subject line, under 50 chars>",
+  "subject": "<subject line, under 50 chars, no clickbait>",
   "preview": "<preview text, under 80 chars>",
   "body": "<full email body>"
 }`;

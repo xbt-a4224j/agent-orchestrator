@@ -1,5 +1,22 @@
 import { z } from "zod";
 
+export const PlaybookSchema = z.enum([
+  "abm_outbound",
+  "competitive_displacement",
+  "thought_leadership",
+  "event_followup",
+  "reactivation",
+]);
+export type Playbook = z.infer<typeof PlaybookSchema>;
+
+export const PLAYBOOK_LABELS: Record<Playbook, string> = {
+  abm_outbound: "ABM Outbound",
+  competitive_displacement: "Competitive Displacement",
+  thought_leadership: "Thought Leadership",
+  event_followup: "Event Follow-up",
+  reactivation: "Account Reactivation",
+};
+
 export const BriefSchema = z.object({
   target_account: z.object({
     name: z.string().min(1),
@@ -18,7 +35,8 @@ export const BriefSchema = z.object({
     company: z.string().min(1),
     role: z.string().min(1),
   }),
-  goal: z.enum(["book_meeting", "nurture", "reactivate"]).optional(),
+  playbook: PlaybookSchema.optional(),
+  icp_signals: z.string().optional(),
   constraints: z.string().optional(),
 });
 
@@ -90,14 +108,38 @@ export const SendSequenceSchema = z.object({
   ),
 });
 
+// Research objects stored in full so the UI can surface structured intel
+export const AccountResearchSchema = z.object({
+  summary: z.string(),
+  company_name: z.string(),
+  industry: z.string(),
+  employees: z.number(),
+  pain_points_hypothesis: z.array(z.string()),
+  recent_news: z.array(z.string()),
+  marketing_stack: z.array(z.string()),
+  icp_fit_signals: z.array(z.string()),
+  competitive_displacement_angle: z.string(),
+});
+
+export const ContactResearchSchema = z.object({
+  summary: z.string(),
+  name: z.string(),
+  role: z.string(),
+  linkedin_url: z.string(),
+  pain_points: z.array(z.string()),
+  communication_tips: z.array(z.string()),
+  champion_hypothesis: z.string(),
+  buying_trigger: z.string(),
+});
+
 export const PacketSchema = z.object({
   run_id: z.string().uuid(),
   email: EmailArtifactSchema,
   linkedin_note: LinkedinArtifactSchema,
   discovery_agenda: AgendaArtifactSchema,
   send_sequence: SendSequenceSchema,
-  account_research: z.string(),
-  contact_research: z.string(),
+  account_research: AccountResearchSchema,
+  contact_research: ContactResearchSchema,
   tone_failed: z.boolean().optional(),
   metadata: z.object({
     total_cost_cents: z.number().int().nonnegative(),
@@ -105,6 +147,7 @@ export const PacketSchema = z.object({
     tokens_out: z.number().int().nonnegative(),
     duration_ms: z.number().int().nonnegative(),
     specialists: z.array(z.string()),
+    playbook: PlaybookSchema.optional(),
   }),
 });
 

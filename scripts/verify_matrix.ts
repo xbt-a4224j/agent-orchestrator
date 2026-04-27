@@ -32,7 +32,7 @@ const brief: Brief = {
   persona: { role: "VP of Marketing", seniority: "VP" },
   offer: { product: "Acme CRM", value_prop: "Cuts outreach time by 60%" },
   sender: { name: "Alex", company: "Acme", role: "AE" },
-  goal: "book_meeting",
+  playbook: "abm_outbound",
 };
 
 interface MatrixResult {
@@ -54,8 +54,8 @@ function stubLLM(output: string): ILLMClient {
 function happyRegistry(): SpecialistRegistry {
   return {
     planner: async () => ok(DEFAULT_DAG),
-    account_research: async () => ok({ summary: "Notion is a productivity company.", company_name: "Notion", industry: "Productivity", employees: 400, pain_points_hypothesis: [], recent_news: [] }),
-    contact_research: async () => ok({ summary: "Sarah Chen, VP Marketing.", name: "Sarah Chen", role: "VP of Marketing", linkedin_url: "", pain_points: ["Scaling"], communication_tips: [] }),
+    account_research: async () => ok({ summary: "Notion is a productivity company.", company_name: "Notion", industry: "Productivity", employees: 400, pain_points_hypothesis: [], recent_news: [], marketing_stack: ["HubSpot"], icp_fit_signals: ["Series C"], competitive_displacement_angle: "Replaces HubSpot campaigns." }),
+    contact_research: async () => ok({ summary: "Sarah Chen, VP Marketing.", name: "Sarah Chen", role: "VP of Marketing", linkedin_url: "", pain_points: ["Scaling"], communication_tips: [], champion_hypothesis: "Would champion to consolidate tools.", buying_trigger: "Headcount freeze." }),
     outreach_writer: async () => ok({ subject: "Quick question", preview: "Notion + Acme", body: "Hi Sarah…" }),
     linkedin_writer: async () => ok({ text: "Hi Sarah!", char_count: 9 }),
     agenda_writer: async () => ok({ title: "Discovery", duration_minutes: 25, talking_points: ["Priorities?", "Pain?", "Success?"] }),
@@ -182,7 +182,7 @@ async function main() {
       ...happyRegistry(),
       account_research: async () => {
         await capturing.call("research Notion");
-        return ok({ summary: "Notion is a productivity company.", company_name: "Notion", industry: "Productivity", employees: 400, pain_points_hypothesis: [], recent_news: [] });
+        return ok({ summary: "Notion is a productivity company.", company_name: "Notion", industry: "Productivity", employees: 400, pain_points_hypothesis: [], recent_news: [], marketing_stack: ["HubSpot"], icp_fit_signals: ["Series C"], competitive_displacement_angle: "Replaces HubSpot campaigns." });
       },
     };
 
@@ -197,7 +197,7 @@ async function main() {
       account_research: async () => {
         const res = await fixtureLLM.call("research Notion");
         if (!res.ok) return err(new SpecialistError("fixture not found", "account_research", 1));
-        return ok({ summary: "Notion is a productivity company.", company_name: "Notion", industry: "Productivity", employees: 400, pain_points_hypothesis: [], recent_news: [] });
+        return ok({ summary: "Notion is a productivity company.", company_name: "Notion", industry: "Productivity", employees: 400, pain_points_hypothesis: [], recent_news: [], marketing_stack: ["HubSpot"], icp_fit_signals: ["Series C"], competitive_displacement_angle: "Replaces HubSpot campaigns." });
       },
     };
 

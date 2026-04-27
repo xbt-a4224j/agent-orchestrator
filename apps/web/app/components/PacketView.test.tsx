@@ -22,14 +22,34 @@ const PACKET: Packet = {
       { day: 3, channel: "linkedin", time: "10:00", note: "Connect request" },
     ],
   },
-  account_research: "Notion is a productivity platform used by over 30M users.",
-  contact_research: "VP of Marketing, 8 years in B2B SaaS, focused on pipeline velocity.",
+  account_research: {
+    summary: "Notion is a productivity platform used by over 30M users.",
+    company_name: "Notion",
+    industry: "Productivity Software",
+    employees: 700,
+    pain_points_hypothesis: ["Scaling outbound", "Tool sprawl"],
+    recent_news: ["Launched Notion AI"],
+    marketing_stack: ["Marketo", "Salesforce"],
+    icp_fit_signals: ["Series C", "Hiring marketing ops"],
+    competitive_displacement_angle: "Replaces Marketo campaigns and Salesforce sequences.",
+  },
+  contact_research: {
+    summary: "VP of Marketing, 8 years in B2B SaaS, focused on pipeline velocity.",
+    name: "Sarah Chen",
+    role: "VP of Marketing",
+    linkedin_url: "https://linkedin.com/in/sarah-chen",
+    pain_points: ["Scaling outbound", "Proving ROI"],
+    communication_tips: ["Lead with data"],
+    champion_hypothesis: "Would champion Quotient to consolidate the martech stack.",
+    buying_trigger: "Headcount freeze forcing the team to do more with less.",
+  },
   metadata: {
     total_cost_cents: 45,
     tokens_in: 3000,
     tokens_out: 800,
     duration_ms: 12500,
     specialists: ["account_research", "contact_research", "outreach_writer", "linkedin_writer", "agenda_writer"],
+    playbook: "abm_outbound" as const,
   },
 };
 
@@ -45,7 +65,7 @@ const PACKET_ROW = {
 describe("PacketView", () => {
   it("renders with a correctly-shaped Packet", () => {
     render(<PacketView packet={PACKET} runId={PACKET.run_id} onNewCampaign={() => {}} />);
-    expect(screen.getByText("Outreach Packet")).toBeTruthy();
+    expect(screen.getByText("Campaign Packet")).toBeTruthy();
     expect(screen.getByText(PACKET.email.subject)).toBeTruthy();
   });
 

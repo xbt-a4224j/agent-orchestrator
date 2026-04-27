@@ -22,13 +22,21 @@ export async function runLinkedinWriter(
     ? `\nTone feedback (must address): ${feedback}\n`
     : "";
 
+  const playbookNote = brief.playbook === "thought_leadership"
+    ? "This is a thought leadership play. Reference a shared professional interest or trend — no product mention at all."
+    : brief.playbook === "competitive_displacement"
+    ? `Hint at the displacement angle without naming competitors: something like "noticed your stack" or "teams consolidating tools.""`
+    : "Lead with genuine curiosity or a shared professional context.";
+
   const prompt = `You are writing a LinkedIn connection request note.${feedbackSection}
 
 Sender: ${brief.sender.name} from ${brief.sender.company}
 Recipient: ${contactResearch.name}, ${contactResearch.role} at ${accountResearch.company_name}
 Product: ${brief.offer.product}
 
-Write a LinkedIn note under 300 characters. No pitch. Genuine curiosity or shared context only.
+Playbook direction: ${playbookNote}
+
+Rules: Under 300 characters. No pitch. One hook — curiosity, shared context, or a compliment on their work.
 
 Respond with ONLY a JSON object:
 {

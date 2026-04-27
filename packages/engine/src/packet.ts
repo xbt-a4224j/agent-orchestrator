@@ -13,23 +13,61 @@ export interface SpecialistOutputs {
   agenda_writer: DiscoveryAgenda;
 }
 
-// Rules-based send sequence — VP+ gets Tue 9am, manager gets Wed 11am
-function buildSendSequence(goal: string | undefined, role: string): Packet["send_sequence"] {
-  const isVP = /vp|chief|cto|ceo|coo|cmo|director/i.test(role);
-  const day1Time = isVP ? "09:00" : "11:00";
-  const day1 = isVP ? "Tuesday" : "Wednesday";
+// Seniority-aware sequencing — VP+ gets Tue 9am LinkedIn-first, Director gets Wed email-first
+function buildSendSequence(brief: Brief): Packet["send_sequence"] {
+  const role = brief.persona.role;
+  const playbook = brief.playbook ?? "abm_outbound";
+  const isVP = /vp|chief|cto|ceo|coo|cmo/i.test(role);
+  const isDirector = /director/i.test(role);
 
-  const baseSteps: Packet["send_sequence"]["steps"] = [
-    { day: 0, channel: "email", time: day1Time, note: `Send initial email (${day1})` },
-    { day: 2, channel: "linkedin", time: "10:00", note: "Connect on LinkedIn" },
-    { day: 5, channel: "email", time: "09:00", note: "Follow-up email if no reply" },
-  ];
-
-  if (goal === "book_meeting") {
-    baseSteps.push({ day: 7, channel: "call", time: "11:00", note: "Optional call if LinkedIn accepted" });
+  if (playbook === "thought_leadership") {
+    return {
+      steps: [
+        { day: 0, channel: "linkedin", time: "09:00", note: "Connect — lead with industry insight, no pitch" },
+        { day: 4, channel: "email", time: "09:00", note: "Follow-up once connected — share a relevant POV" },
+        { day: 10, channel: "linkedin", time: "10:00", note: "Engage with their content, then message" },
+      ],
+    };
   }
 
-  return { steps: baseSteps };
+  if (playbook === "event_followup") {
+    return {
+      steps: [
+        { day: 0, channel: "email", time: "09:00", note: "Send within 24h of event — warm, reference the context" },
+        { day: 1, channel: "linkedin", time: "10:00", note: "Connect on LinkedIn — reference the event" },
+        { day: 5, channel: "email", time: "09:00", note: "Follow-up with a relevant resource or insight" },
+      ],
+    };
+  }
+
+  if (isVP) {
+    return {
+      steps: [
+        { day: 0, channel: "email", time: "09:00", note: "Initial email (Tuesday recommended for VP+)" },
+        { day: 3, channel: "linkedin", time: "09:00", note: "LinkedIn connect — reinforce the thread" },
+        { day: 7, channel: "email", time: "08:30", note: "Follow-up — new angle, not a bump" },
+        { day: 10, channel: "call", time: "10:00", note: "Call if LinkedIn connected" },
+      ],
+    };
+  }
+
+  if (isDirector) {
+    return {
+      steps: [
+        { day: 0, channel: "email", time: "10:00", note: "Initial email (Wednesday morning for Directors)" },
+        { day: 2, channel: "linkedin", time: "10:00", note: "Connect on LinkedIn" },
+        { day: 6, channel: "email", time: "09:00", note: "Follow-up — reference their pain point" },
+      ],
+    };
+  }
+
+  return {
+    steps: [
+      { day: 0, channel: "email", time: "10:00", note: "Initial outreach" },
+      { day: 3, channel: "linkedin", time: "10:00", note: "LinkedIn connect" },
+      { day: 7, channel: "email", time: "09:00", note: "Follow-up" },
+    ],
+  };
 }
 
 export function assemblePacket(
@@ -51,15 +89,16 @@ export function assemblePacket(
     email: outputs.outreach_writer,
     linkedin_note: outputs.linkedin_writer,
     discovery_agenda: outputs.agenda_writer,
-    send_sequence: buildSendSequence(brief.goal, brief.persona.role),
-    account_research: outputs.account_research.summary,
-    contact_research: outputs.contact_research.summary,
+    send_sequence: buildSendSequence(brief),
+    account_research: outputs.account_research,
+    contact_research: outputs.contact_research,
     metadata: {
       total_cost_cents: run.total_cost_cents,
       tokens_in: 0,
       tokens_out: 0,
       duration_ms: Date.now() - startedAt,
       specialists,
+      playbook: brief.playbook,
     },
   };
 }

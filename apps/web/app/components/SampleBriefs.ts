@@ -1,44 +1,46 @@
 import type { Brief } from "@agent-orchestrator/engine";
 
 export const SAMPLE_BRIEFS: Record<string, { label: string; brief: Brief }> = {
-  notion: {
-    label: "Notion — VP of Marketing",
+  figma: {
+    label: "Figma — Head of Marketing",
     brief: {
-      target_account: { name: "Notion", domain: "notion.so" },
-      persona: { role: "VP of Marketing", seniority: "VP" },
+      target_account: { name: "Figma", domain: "figma.com" },
+      persona: { role: "Head of Marketing", seniority: "Director" },
       offer: {
-        product: "Acme CRM",
-        value_prop: "Cuts outbound rep time by 60% through AI-drafted, persona-tuned sequences",
+        product: "Quotient",
+        value_prop: "Replace 10 marketing tools with one AI agent that coordinates strategy, content, and execution",
       },
-      sender: { name: "Alex Johnson", company: "Acme", role: "Account Executive" },
-      goal: "book_meeting",
-      constraints: "Keep tone peer-to-peer. No hyperbole.",
+      sender: { name: "Alex", company: "Quotient", role: "AE" },
+      playbook: "abm_outbound",
+      icp_signals: "Marketo + Pardot customer, expanding enterprise GTM, recent marketing leadership hire",
     },
   },
   linear: {
-    label: "Linear — Head of Sales",
+    label: "Linear — Director of Demand Gen",
     brief: {
       target_account: { name: "Linear", domain: "linear.app" },
-      persona: { role: "Head of Sales", seniority: "Director" },
+      persona: { role: "Director of Demand Generation", seniority: "Director" },
       offer: {
-        product: "Acme CRM",
-        value_prop: "Gives fast-growing teams a single pane for pipeline + outreach without switching tools",
+        product: "Quotient",
+        value_prop: "Cut campaign launch time from weeks to hours — one AI agent owns the full ABM workflow",
       },
-      sender: { name: "Alex Johnson", company: "Acme", role: "Account Executive" },
-      goal: "book_meeting",
+      sender: { name: "Alex", company: "Quotient", role: "AE" },
+      playbook: "competitive_displacement",
+      icp_signals: "HubSpot + Apollo stack, Series B, small marketing team scaling fast",
     },
   },
-  figma: {
-    label: "Figma — CTO",
+  notion: {
+    label: "Notion — CMO",
     brief: {
-      target_account: { name: "Figma", domain: "figma.com" },
-      persona: { role: "CTO", seniority: "C-Level" },
+      target_account: { name: "Notion", domain: "notion.so" },
+      persona: { role: "CMO", seniority: "C-Level" },
       offer: {
-        product: "Acme CRM",
-        value_prop: "Surfaces engineering team's deal impact so technical buyers see ROI before they ask",
+        product: "Quotient",
+        value_prop: "One AI agent for the entire campaign lifecycle — from ICP research to multi-channel execution",
       },
-      sender: { name: "Alex Johnson", company: "Acme", role: "Account Executive" },
-      goal: "nurture",
+      sender: { name: "Alex", company: "Quotient", role: "AE" },
+      playbook: "thought_leadership",
+      constraints: "Peer-to-peer only. CMO level — no feature list, no pitch in first touch.",
     },
   },
 };

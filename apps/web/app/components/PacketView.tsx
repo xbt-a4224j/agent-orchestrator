@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { Packet } from "@agent-orchestrator/engine";
+import { PLAYBOOK_LABELS } from "@agent-orchestrator/engine";
 
 interface PacketViewProps {
   packet: Packet;
@@ -18,7 +19,6 @@ export default function PacketView({ packet, runId, initialHubspotId, onNewCampa
   const [hubspotId, setHubspotId] = useState<string | null>(initialHubspotId ?? null);
   const [pushing, setPushing] = useState(false);
 
-  // Reset hubspot state when switching to a different run
   useEffect(() => {
     setHubspotId(initialHubspotId ?? null);
   }, [runId, initialHubspotId]);
@@ -34,12 +34,23 @@ export default function PacketView({ packet, runId, initialHubspotId, onNewCampa
     }
   }
 
+  const playbook = packet.metadata.playbook;
+  const ar = packet.account_research;
+  const cr = packet.contact_research;
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-white">Outreach Packet</h2>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <div className="flex items-center gap-2 mb-1">
+            <h2 className="text-xl font-bold text-white">Campaign Packet</h2>
+            {playbook && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-900/60 border border-indigo-700/50 text-indigo-300">
+                {PLAYBOOK_LABELS[playbook]}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-gray-500">
             Cost: ${(packet.metadata.total_cost_cents / 100).toFixed(4)} ·{" "}
             {packet.metadata.duration_ms}ms
           </p>
@@ -154,14 +165,108 @@ export default function PacketView({ packet, runId, initialHubspotId, onNewCampa
         )}
 
         {tab === "Research" && (
-          <div className="space-y-6">
+          <div className="space-y-8">
+            {/* Account intel */}
             <div>
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Account</div>
-              <p className="text-gray-300 text-sm leading-relaxed">{packet.account_research}</p>
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">Account Intel</div>
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">{ar.summary}</p>
+
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <div className="text-xs text-gray-600 mb-1">Industry</div>
+                  <div className="text-gray-400 text-sm">{ar.industry} · {ar.employees.toLocaleString()} employees</div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-600 mb-1">ICP fit signals</div>
+                  <ul className="space-y-0.5">
+                    {ar.icp_fit_signals.map((s, i) => (
+                      <li key={i} className="text-green-400 text-xs flex gap-1"><span>↑</span>{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <div className="text-xs text-gray-600 mb-1">Current marketing stack</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {ar.marketing_stack.map((tool) => (
+                    <span key={tool} className="px-2 py-0.5 rounded text-xs bg-gray-800 text-gray-400 border border-gray-700">
+                      {tool}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {ar.competitive_displacement_angle && (
+                <div className="bg-orange-950/30 border border-orange-800/40 rounded p-3">
+                  <div className="text-xs text-orange-400 mb-1">Displacement angle</div>
+                  <p className="text-orange-200 text-xs leading-relaxed">{ar.competitive_displacement_angle}</p>
+                </div>
+              )}
+
+              {ar.recent_news.length > 0 && (
+                <div className="mt-4">
+                  <div className="text-xs text-gray-600 mb-1">Recent news</div>
+                  <ul className="space-y-1">
+                    {ar.recent_news.map((n, i) => (
+                      <li key={i} className="text-gray-500 text-xs">· {n}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
+
+            {/* Contact intel */}
             <div>
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Contact</div>
-              <p className="text-gray-300 text-sm leading-relaxed">{packet.contact_research}</p>
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">Contact Intel</div>
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <div className="text-white text-sm font-medium">{cr.name}</div>
+                  <div className="text-gray-500 text-xs">{cr.role}</div>
+                </div>
+                {cr.linkedin_url && (
+                  <a
+                    href={cr.linkedin_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                  >
+                    LinkedIn →
+                  </a>
+                )}
+              </div>
+
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">{cr.summary}</p>
+
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <div className="text-xs text-gray-600 mb-1">Pain points</div>
+                  <ul className="space-y-1">
+                    {cr.pain_points.map((p, i) => (
+                      <li key={i} className="text-gray-400 text-xs">· {p}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-600 mb-1">Communication tips</div>
+                  <ul className="space-y-1">
+                    {cr.communication_tips.map((t, i) => (
+                      <li key={i} className="text-gray-400 text-xs">· {t}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="bg-indigo-950/30 border border-indigo-800/40 rounded p-3">
+                  <div className="text-xs text-indigo-400 mb-1">Champion hypothesis</div>
+                  <p className="text-indigo-200 text-xs leading-relaxed">{cr.champion_hypothesis}</p>
+                </div>
+                <div className="bg-gray-800/50 border border-gray-700/50 rounded p-3">
+                  <div className="text-xs text-gray-500 mb-1">Buying trigger</div>
+                  <p className="text-gray-300 text-xs leading-relaxed">{cr.buying_trigger}</p>
+                </div>
+              </div>
             </div>
           </div>
         )}

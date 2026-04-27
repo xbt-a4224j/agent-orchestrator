@@ -13,9 +13,9 @@ const run = {
 const brief = {
   target_account: { name: "Notion", domain: "notion.so" },
   persona: { role: "VP of Marketing" },
-  offer: { product: "Acme CRM", value_prop: "Cuts outreach time" },
-  sender: { name: "Alex", company: "Acme", role: "AE" },
-  goal: "book_meeting" as const,
+  offer: { product: "Quotient", value_prop: "One AI agent for the full campaign lifecycle" },
+  sender: { name: "Alex", company: "Quotient", role: "AE" },
+  playbook: "abm_outbound" as const,
 };
 
 const outputs = {
@@ -26,6 +26,9 @@ const outputs = {
     employees: 400,
     pain_points_hypothesis: ["Scaling"],
     recent_news: ["Launched AI"],
+    marketing_stack: ["Marketo", "Salesforce"],
+    icp_fit_signals: ["Series C", "Hiring marketing ops"],
+    competitive_displacement_angle: "Replaces Marketo campaigns and Salesforce sequences.",
   },
   contact_research: {
     summary: "Sarah Chen is VP of Marketing.",
@@ -34,10 +37,12 @@ const outputs = {
     linkedin_url: "https://linkedin.com/in/sarah-chen",
     pain_points: ["Scaling outbound"],
     communication_tips: ["Lead with data"],
+    champion_hypothesis: "Would champion Quotient to consolidate the martech stack.",
+    buying_trigger: "Headcount freeze forcing the team to do more with less.",
   },
   outreach_writer: {
     subject: "Quick question",
-    preview: "Notion + Acme",
+    preview: "Notion + Quotient",
     body: "Hi Sarah...",
   },
   linkedin_writer: {
@@ -45,7 +50,7 @@ const outputs = {
     char_count: 37,
   },
   agenda_writer: {
-    title: "Discovery: Acme × Notion",
+    title: "Discovery: Quotient × Notion",
     duration_minutes: 25,
     talking_points: ["Current priorities?", "Pain points?", "Success metrics?"],
   },
@@ -59,26 +64,38 @@ describe("assemblePacket", () => {
     expect(packet.run_id).toBe(run.id);
   });
 
-  it("VP persona gets Tue 9am as first send slot", () => {
+  it("packet stores full account_research object, not just summary string", () => {
+    const packet = assemblePacket(outputs, run, brief, Date.now());
+    expect(packet.account_research.marketing_stack).toContain("Marketo");
+    expect(packet.account_research.icp_fit_signals).toContain("Series C");
+    expect(packet.account_research.competitive_displacement_angle).toBeTruthy();
+  });
+
+  it("packet stores full contact_research object with champion fields", () => {
+    const packet = assemblePacket(outputs, run, brief, Date.now());
+    expect(packet.contact_research.champion_hypothesis).toBeTruthy();
+    expect(packet.contact_research.buying_trigger).toBeTruthy();
+  });
+
+  it("VP persona gets 09:00 as first send slot", () => {
     const packet = assemblePacket(outputs, run, brief, Date.now());
     expect(packet.send_sequence.steps[0]?.time).toBe("09:00");
   });
 
-  it("manager persona gets Wed 11am as first send slot", () => {
-    const managerBrief = { ...brief, persona: { role: "Sales Manager" } };
-    const packet = assemblePacket(outputs, run, managerBrief, Date.now());
-    expect(packet.send_sequence.steps[0]?.time).toBe("11:00");
+  it("thought_leadership playbook leads with linkedin", () => {
+    const tlBrief = { ...brief, playbook: "thought_leadership" as const };
+    const packet = assemblePacket(outputs, run, tlBrief, Date.now());
+    expect(packet.send_sequence.steps[0]?.channel).toBe("linkedin");
   });
 
-  it("metadata includes all expected specialist names", () => {
+  it("metadata includes playbook", () => {
     const packet = assemblePacket(outputs, run, brief, Date.now());
+    expect(packet.metadata.playbook).toBe("abm_outbound");
     expect(packet.metadata.specialists).toContain("outreach_writer");
-    expect(packet.metadata.specialists).toContain("linkedin_writer");
   });
 
   it("metadata duration is positive", () => {
-    const start = Date.now() - 500;
-    const packet = assemblePacket(outputs, run, brief, start);
+    const packet = assemblePacket(outputs, run, brief, Date.now() - 500);
     expect(packet.metadata.duration_ms).toBeGreaterThan(0);
   });
 });

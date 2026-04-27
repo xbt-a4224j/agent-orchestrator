@@ -9,7 +9,7 @@ Brief:
 - Target account: ${brief.target_account.name}${brief.target_account.domain ? ` (${brief.target_account.domain})` : ""}
 - Persona: ${brief.persona.role}${brief.persona.seniority ? `, ${brief.persona.seniority}` : ""}
 - Offer: ${brief.offer.product} — ${brief.offer.value_prop}
-- Goal: ${brief.goal ?? "book_meeting"}
+- Goal: ${brief.playbook ?? "abm_outbound"}
 
 Available agents: account_research, contact_research, outreach_writer, linkedin_writer, agenda_writer, tone_checker
 
