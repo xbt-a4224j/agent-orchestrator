@@ -13,8 +13,8 @@ const run = {
 const brief = {
   target_account: { name: "Notion", domain: "notion.so" },
   persona: { role: "VP of Marketing" },
-  offer: { product: "Quotient", value_prop: "One AI agent for the full campaign lifecycle" },
-  sender: { name: "Alex", company: "Quotient", role: "AE" },
+  offer: { product: "Prism", value_prop: "One AI agent for the full campaign lifecycle" },
+  sender: { name: "Alex", company: "Prism", role: "AE" },
   playbook: "abm_outbound" as const,
 };
 
@@ -37,12 +37,12 @@ const outputs = {
     linkedin_url: "https://linkedin.com/in/sarah-chen",
     pain_points: ["Scaling outbound"],
     communication_tips: ["Lead with data"],
-    champion_hypothesis: "Would champion Quotient to consolidate the martech stack.",
+    champion_hypothesis: "Would champion Prism to consolidate the martech stack.",
     buying_trigger: "Headcount freeze forcing the team to do more with less.",
   },
   outreach_writer: {
     subject: "Quick question",
-    preview: "Notion + Quotient",
+    preview: "Notion + Prism",
     body: "Hi Sarah...",
   },
   linkedin_writer: {
@@ -50,7 +50,7 @@ const outputs = {
     char_count: 37,
   },
   agenda_writer: {
-    title: "Discovery: Quotient × Notion",
+    title: "Discovery: Prism × Notion",
     duration_minutes: 25,
     talking_points: ["Current priorities?", "Pain points?", "Success metrics?"],
   },

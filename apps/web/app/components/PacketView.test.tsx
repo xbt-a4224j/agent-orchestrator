@@ -40,7 +40,7 @@ const PACKET: Packet = {
     linkedin_url: "https://linkedin.com/in/sarah-chen",
     pain_points: ["Scaling outbound", "Proving ROI"],
     communication_tips: ["Lead with data"],
-    champion_hypothesis: "Would champion Quotient to consolidate the martech stack.",
+    champion_hypothesis: "Would champion Prism to prove attribution ROI to leadership.",
     buying_trigger: "Headcount freeze forcing the team to do more with less.",
   },
   metadata: {

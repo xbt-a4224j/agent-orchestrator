@@ -23,7 +23,7 @@ export async function runAccountResearch(
   const account = await enrichAccount(domain);
 
   const playbookCtx = brief.playbook
-    ? `Campaign playbook: ${brief.playbook.replace(/_/g, " ")}${brief.playbook === "competitive_displacement" ? " — identify which tools in their marketing stack Quotient would replace and the displacement angle." : "."}`
+    ? `Campaign playbook: ${brief.playbook.replace(/_/g, " ")}${brief.playbook === "competitive_displacement" ? ` — identify which tools in their marketing stack ${brief.offer.product} would replace and the displacement angle.` : "."}`
     : "";
 
   const icpCtx = brief.icp_signals
@@ -49,7 +49,7 @@ Campaign context:
 ${playbookCtx}
 ${icpCtx}
 
-Synthesize this into a focused account brief. For competitive_displacement_angle: identify which tools in their marketing stack Quotient could consolidate or replace, and what the displacement narrative should be. If the playbook is not competitive_displacement, still note displacement opportunities but keep it brief.
+Synthesize this into a focused account brief. For competitive_displacement_angle: identify which tools in their marketing stack ${brief.offer.product} could consolidate or replace, and what the displacement narrative should be. If the playbook is not competitive_displacement, still note displacement opportunities but keep it brief.
 
 Respond with ONLY a JSON object:
 {
@@ -61,7 +61,7 @@ Respond with ONLY a JSON object:
   "recent_news": ${JSON.stringify(account.recent_news)},
   "marketing_stack": ${JSON.stringify(account.marketing_stack)},
   "icp_fit_signals": ["<signal 1 — why they fit ICP right now>", "<signal 2>"],
-  "competitive_displacement_angle": "<1-2 sentences: which tools Quotient would replace and the narrative hook>"
+  "competitive_displacement_angle": "<1-2 sentences: which tools ${brief.offer.product} would replace and the narrative hook>"
 }`;
 
   const result = await llm.call(prompt, { maxTokens: 1024 });
@@ -82,7 +82,7 @@ Respond with ONLY a JSON object:
       recent_news: account.recent_news,
       marketing_stack: account.marketing_stack,
       icp_fit_signals: ["Growing marketing team", "Recent funding"],
-      competitive_displacement_angle: `${account.name} uses ${account.marketing_stack.slice(0, 2).join(" and ")}, which Quotient consolidates into a single agent-driven workflow.`,
+      competitive_displacement_angle: `${account.name} uses ${account.marketing_stack.slice(0, 2).join(" and ")}, which ${brief.offer.product} could consolidate into a single attribution layer.`,
     });
   }
 }

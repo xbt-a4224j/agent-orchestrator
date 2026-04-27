@@ -10,8 +10,8 @@ import type { ContactResearch } from "../src/specialists/contact_research";
 const brief = {
   target_account: { name: "Notion", domain: "notion.so" },
   persona: { role: "VP of Marketing" },
-  offer: { product: "Quotient", value_prop: "One AI agent for the full campaign lifecycle" },
-  sender: { name: "Alex", company: "Quotient", role: "AE" },
+  offer: { product: "Prism", value_prop: "One AI agent for the full campaign lifecycle" },
+  sender: { name: "Alex", company: "Prism", role: "AE" },
   playbook: "abm_outbound" as const,
 };
 
@@ -34,7 +34,7 @@ const contactResearch: ContactResearch = {
   linkedin_url: "https://linkedin.com/in/sarah-chen",
   pain_points: ["Scaling outbound", "Proving ROI"],
   communication_tips: ["Lead with data"],
-  champion_hypothesis: "Would champion Quotient to consolidate the martech stack and demonstrate strategic leverage.",
+  champion_hypothesis: "Would champion Prism to consolidate the martech stack and demonstrate strategic leverage.",
   buying_trigger: "Headcount freeze forcing the team to do more with less.",
 };
 
@@ -53,7 +53,7 @@ describe("outreach_writer", () => {
   it("happy path returns valid email", async () => {
     const emailJson = JSON.stringify({
       subject: "Quick question Sarah",
-      preview: "Notion + Quotient",
+      preview: "Notion + Prism",
       body: "Hi Sarah, noticed Notion AI launch...",
     });
     const result = await runOutreachWriter(brief, accountResearch, contactResearch, mockLLM(emailJson));
@@ -113,7 +113,7 @@ describe("linkedin_writer", () => {
 describe("agenda_writer", () => {
   it("happy path returns valid agenda", async () => {
     const agendaJson = JSON.stringify({
-      title: "Discovery: Quotient × Notion",
+      title: "Discovery: Prism × Notion",
       duration_minutes: 25,
       talking_points: ["Current priorities?", "Pain with scale?", "Success metrics?"],
     });

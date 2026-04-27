@@ -24,7 +24,7 @@ export async function runAgendaWriter(
     : "";
 
   const playbookCtx = brief.playbook === "competitive_displacement"
-    ? `Open with current-state discovery on their marketing stack before introducing how Quotient fits. Don't lead with displacement — earn the right to it.`
+    ? `Open with current-state discovery on their attribution setup before introducing how ${brief.offer.product} fits. Don't lead with displacement — earn the right to it.`
     : brief.playbook === "thought_leadership"
     ? `Frame the agenda around industry trends first. Position the seller as a peer with expertise, not a vendor with a product.`
     : `Standard discovery agenda — focused on their goals and pain points before any product discussion.`;

@@ -46,7 +46,7 @@ Respond with ONLY a JSON object:
   "linkedin_url": "${contact.linkedin_url}",
   "pain_points": ["<most relevant pain 1>", "<pain 2>"],
   "communication_tips": ["<tip 1 — e.g. lead with pipeline impact, not features>", "<tip 2>"],
-  "champion_hypothesis": "<1-2 sentences: why this person would internally champion Quotient — what's in it for them politically and professionally>",
+  "champion_hypothesis": "<1-2 sentences: why this person would internally champion ${brief.offer.product} — what's in it for them politically and professionally>",
   "buying_trigger": "<1 sentence: the specific signal or moment that would make them act now>"
 }`;
 
@@ -66,7 +66,7 @@ Respond with ONLY a JSON object:
       linkedin_url: contact.linkedin_url,
       pain_points: contact.pain_points,
       communication_tips: ["Lead with pipeline impact, not features", "Reference their recent news to show you've done homework"],
-      champion_hypothesis: `As ${contact.role}, they would champion Quotient to consolidate their stack and demonstrate strategic leverage to leadership.`,
+      champion_hypothesis: `As ${contact.role}, they would champion ${brief.offer.product} to demonstrate attribution ROI and secure their budget allocation.`,
       buying_trigger: "Headcount freeze forcing them to do more with the existing team.",
     });
   }

@@ -14,7 +14,7 @@ export async function runBattlecard(
   accountResearch: AccountResearch,
   llm: ILLMClient
 ): Promise<Result<Battlecard, SpecialistError>> {
-  const prompt = `You are a competitive intelligence specialist at Quotient, an AI platform that replaces fragmented marketing tool stacks with a single agent that handles the full campaign lifecycle.
+  const prompt = `You are a competitive intelligence specialist. A sales rep is selling Prism, a multi-touch attribution platform that unifies campaign analytics and maps every marketing touch to revenue.
 
 A sales rep is about to reach out to ${accountResearch.company_name}, who uses ${accountResearch.marketing_stack.join(", ")}.
 
@@ -28,7 +28,7 @@ Context:
 Respond with ONLY a JSON object:
 {
   "tool": "${tool}",
-  "replaces": "<1-2 sentences: exactly what workflows in ${tool} Quotient handles — be specific about features, not vague>",
+  "replaces": "<1-2 sentences: exactly what attribution or analytics workflows in ${tool} Prism handles — be specific about features, not vague>",
   "objection": "<the most likely objection the contact will raise when you suggest replacing ${tool}>",
   "reframe": "<one crisp sentence: how to reframe that objection without dismissing it>"
 }`;
@@ -44,7 +44,7 @@ Respond with ONLY a JSON object:
   } catch {
     return ok({
       tool,
-      replaces: `Quotient handles the campaign sequencing and content generation workflows currently done in ${tool}.`,
+      replaces: `Prism replaces the attribution and campaign analytics workflows currently done in ${tool} with a unified revenue view.`,
       objection: `We've invested heavily in ${tool} and the team knows it well.`,
       reframe: `That's exactly why we start with one workflow — no rip-and-replace, just a faster lane alongside what you have.`,
     });

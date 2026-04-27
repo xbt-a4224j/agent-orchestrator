@@ -383,7 +383,7 @@ export default function PacketView({ packet, runId, initialHubspotId, onNewCampa
                         <button onClick={() => { setBattlecard(null); setBattlecardTool(null); }} className="text-slate-400 hover:text-slate-600 text-xs">✕</button>
                       </div>
                       <div>
-                        <div className="text-xs font-medium text-orange-600 mb-1">Quotient replaces</div>
+                        <div className="text-xs font-medium text-orange-600 mb-1">Prism replaces</div>
                         <p className="text-slate-700 text-xs leading-relaxed">{battlecard.replaces}</p>
                       </div>
                       <div>

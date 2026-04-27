@@ -39,8 +39,8 @@ export async function POST(
     const syntheticBrief: Brief = storedBrief ?? {
       target_account: { name: ar.company_name, domain: "" },
       persona: { role: cr.role },
-      offer: { product: "Quotient", value_prop: "One AI agent for the full campaign lifecycle" },
-      sender: { name: "Alex", company: "Quotient", role: "AE" },
+      offer: { product: "Prism", value_prop: "Full multi-touch attribution from first click to closed-won" },
+      sender: { name: "Alex", company: "Prism", role: "AE" },
       playbook: "abm_outbound",
     };
 
