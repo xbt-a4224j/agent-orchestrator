@@ -38,7 +38,8 @@ function reducer(state: RunStreamState, action: Action): RunStreamState {
       };
     }
     case "error":
-      return { ...state, status: "failed" };
+      // onerror fires on clean server-side close too — don't downgrade a completed run
+      return state.status === "completed" ? state : { ...state, status: "failed" };
     default:
       return state;
   }
