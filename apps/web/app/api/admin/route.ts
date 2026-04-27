@@ -14,6 +14,7 @@ export async function GET(): Promise<Response> {
       dbMeta,
       costStats,
       langfuseStatus,
+      sentimentBreakdown,
     ] = await Promise.all([
       // Campaign counts by status
       db<{ status: string; count: string }[]>`
@@ -66,6 +67,17 @@ export async function GET(): Promise<Response> {
 
       // Langfuse reachability (fire-and-forget check)
       Promise.resolve(!!process.env["LANGFUSE_PUBLIC_KEY"]),
+
+      // Reply simulation sentiment breakdown
+      db<{ sentiment: string; count: string }[]>`
+        SELECT
+          sim->>'sentiment' AS sentiment,
+          count(*)::text
+        FROM packets,
+          jsonb_array_elements(content->'simulations') AS sim
+        GROUP BY sentiment
+        ORDER BY count(*) DESC
+      `.catch(() => [] as { sentiment: string; count: string }[]),
     ]);
 
     const statusMap = Object.fromEntries(runStats.map((r) => [r.status, parseInt(r.count)]));
@@ -104,6 +116,10 @@ export async function GET(): Promise<Response> {
         langfuse: langfuseStatus,
         anthropic: !!process.env["ANTHROPIC_API_KEY"],
       },
+      reply_sentiments: (sentimentBreakdown ?? []).map((r) => ({
+        sentiment: r.sentiment,
+        count: parseInt(r.count),
+      })),
     });
   } catch (e) {
     return toErrorResponse(e);

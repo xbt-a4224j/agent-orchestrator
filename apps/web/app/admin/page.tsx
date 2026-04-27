@@ -45,6 +45,7 @@ interface AdminData {
     langfuse: boolean;
     anthropic: boolean;
   };
+  reply_sentiments: { sentiment: string; count: number }[];
 }
 
 function fmt(cents: number) {
@@ -131,7 +132,48 @@ export default function AdminPage() {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-4 gap-6 mb-6">
+          {/* Reply sentiment */}
+          <div className="card p-5">
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Reply sentiment</div>
+            {data.reply_sentiments.length === 0 ? (
+              <p className="text-slate-400 text-sm">No simulations run yet</p>
+            ) : (() => {
+              const total = data.reply_sentiments.reduce((s, r) => s + r.count, 0);
+              const colors: Record<string, string> = {
+                positive: "bg-emerald-500",
+                neutral: "bg-slate-300",
+                objection: "bg-red-400",
+              };
+              const labels: Record<string, string> = {
+                positive: "Positive",
+                neutral: "Neutral",
+                objection: "Objection",
+              };
+              return (
+                <div className="space-y-3">
+                  {data.reply_sentiments.map((r) => (
+                    <div key={r.sentiment}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs text-slate-600">{labels[r.sentiment] ?? r.sentiment}</span>
+                        <span className="text-xs font-medium text-slate-500">
+                          {Math.round((r.count / total) * 100)}%
+                        </span>
+                      </div>
+                      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${colors[r.sentiment] ?? "bg-slate-400"}`}
+                          style={{ width: `${(r.count / total) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <p className="text-xs text-slate-300 pt-1">{total} simulation{total !== 1 ? "s" : ""} total</p>
+                </div>
+              );
+            })()}
+          </div>
+
           {/* Playbook mix */}
           <div className="card p-5">
             <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Playbook mix</div>
@@ -158,7 +200,7 @@ export default function AdminPage() {
           </div>
 
           {/* Recent runs */}
-          <div className="card p-5 col-span-2">
+          <div className="card p-5 col-span-2 col-start-3">
             <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Recent campaigns</div>
             {data.recent_runs.length === 0 ? (
               <p className="text-slate-400 text-sm">No runs yet</p>

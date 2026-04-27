@@ -217,3 +217,23 @@ export async function getPacket(db: DbClient, runId: string): Promise<PacketRow 
   const [row] = await db<PacketRow[]>`SELECT * FROM packets WHERE run_id = ${runId}`;
   return row ?? null;
 }
+
+export async function appendSimulation(
+  db: DbClient,
+  runId: string,
+  sentiment: string
+): Promise<void> {
+  await db`
+    UPDATE packets
+    SET content = jsonb_set(
+      content,
+      '{simulations}',
+      COALESCE(content->'simulations', '[]'::jsonb)
+        || jsonb_build_array(jsonb_build_object(
+             'sentiment', ${sentiment}::text,
+             'simulated_at', to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS"Z"')
+           ))
+    )
+    WHERE run_id = ${runId}
+  `;
+}

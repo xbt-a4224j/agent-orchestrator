@@ -1,4 +1,4 @@
-import { getPacket } from "@agent-orchestrator/db";
+import { getPacket, appendSimulation } from "@agent-orchestrator/db";
 import { LLMClient, runReplySimulator } from "@agent-orchestrator/engine";
 import { getDb } from "../../../_lib/db";
 import { toErrorResponse } from "../../../_lib/errorMap";
@@ -49,6 +49,9 @@ export async function POST(
     if (!result.ok) {
       return Response.json({ error: result.error.message }, { status: 500 });
     }
+
+    // Persist so admin can report sentiment distribution
+    await appendSimulation(db, id, sentiment);
 
     return Response.json(result.value);
   } catch (e) {
