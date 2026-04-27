@@ -19,3 +19,4 @@ export * from "./integrations/enrichment.mock";
 export * from "./integrations/hubspot.mock";
 export * from "./integrations/resend.mock";
 export * from "./integrations/engagement.mock";
+export { flushLangfuse } from "./langfuse";

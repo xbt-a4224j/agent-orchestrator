@@ -4,6 +4,8 @@ import type { Brief, Step, Run, StepStatus } from "./schemas";
 import { SpecialistError, LLMTransientError, ok, err, type Result } from "./errors";
 import type { OrchestratorEmitter } from "./events";
 import { log } from "./log";
+import type { LLMClient } from "./llm";
+import { startTrace, scoreTrace, flushLangfuse } from "./langfuse";
 
 export type SpecialistInput = {
   brief: Brief;
@@ -27,7 +29,8 @@ export async function runOrchestrator(
   dag: Dag,
   registry: SpecialistRegistry,
   emitter: OrchestratorEmitter,
-  runId?: string
+  runId?: string,
+  llmClient?: LLMClient
 ): Promise<OrchestratorResult> {
   const run_id = runId ?? randomUUID();
   const brief_id = randomUUID();
@@ -40,6 +43,13 @@ export async function runOrchestrator(
     started_at,
     total_cost_cents: 0,
   };
+
+  const trace = startTrace({
+    runId: run_id,
+    targetAccount: brief.target_account.name,
+    personaRole: brief.persona.role,
+    playbook: brief.playbook ?? "abm_outbound",
+  });
 
   log({ level: "info", event: "run.started", run_id });
   emitter.emit("event", { type: "run.started", run });
@@ -106,6 +116,7 @@ export async function runOrchestrator(
           depOutputs[depId] = outputs[depId];
         }
 
+        llmClient?.setTrace(trace, node.agent);
         const result = await runWithRetry(specialist, { brief, deps: depOutputs });
 
         step.completed_at = new Date().toISOString();
@@ -143,6 +154,19 @@ export async function runOrchestrator(
     type: failed.size === 0 ? "run.completed" : "run.failed",
     run: completedRun,
   });
+
+  scoreTrace(trace, {
+    name: "run_success",
+    value: failed.size === 0 ? 1 : 0,
+    comment: completedRun.status,
+  });
+  if (llmClient) {
+    scoreTrace(trace, {
+      name: "total_cost_cents",
+      value: llmClient.totalCostCents,
+    });
+  }
+  await flushLangfuse();
 
   return { run: completedRun, steps, outputs };
 }

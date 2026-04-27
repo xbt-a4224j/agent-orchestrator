@@ -1,6 +1,8 @@
 import Anthropic, { APIError, APIConnectionError } from "@anthropic-ai/sdk";
 import { costCents } from "./cost";
 import { LLMTransientError, LLMPermanentError, ok, err, type Result } from "./errors";
+import { type LangfuseTraceClient } from "langfuse";
+import { recordGeneration } from "./langfuse";
 
 export interface LLMCallResult {
   output: string;
@@ -29,10 +31,17 @@ export class LLMClient implements ILLMClient {
   private _totalTokensIn = 0;
   private _totalTokensOut = 0;
   private _totalCostCents = 0;
+  private _trace: LangfuseTraceClient | null = null;
+  private _currentAgent = "llm";
 
   constructor(opts: { apiKey: string; model: string }) {
     this.model = opts.model;
     this.client = new Anthropic({ apiKey: opts.apiKey });
+  }
+
+  setTrace(trace: LangfuseTraceClient | null, agent: string): void {
+    this._trace = trace;
+    this._currentAgent = agent;
   }
 
   get totalTokensIn() { return this._totalTokensIn; }
@@ -43,6 +52,7 @@ export class LLMClient implements ILLMClient {
     prompt: string,
     opts: LLMCallOptions = {}
   ): Promise<Result<LLMCallResult, LLMTransientError | LLMPermanentError>> {
+    const t0 = Date.now();
     try {
       const response = await this.client.messages.create({
         model: this.model,
@@ -56,10 +66,23 @@ export class LLMClient implements ILLMClient {
       const cost = costCents(this.model, tokens_in, tokens_out);
       const output =
         response.content[0]?.type === "text" ? response.content[0].text : "";
+      const latencyMs = Date.now() - t0;
 
       this._totalTokensIn += tokens_in;
       this._totalTokensOut += tokens_out;
       this._totalCostCents += cost;
+
+      recordGeneration(this._trace, {
+        agent: this._currentAgent,
+        model: this.model,
+        prompt,
+        output,
+        tokensIn: tokens_in,
+        tokensOut: tokens_out,
+        costCents: cost,
+        attempt: 1,
+        latencyMs,
+      });
 
       return ok({
         output,
