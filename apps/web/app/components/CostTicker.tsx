@@ -34,11 +34,27 @@ export default function CostTicker({ targetCents }: CostTickerProps) {
   const dollars = (displayCents / 100).toFixed(4);
 
   return (
-    <div className="card p-4 text-center">
-      <div className="text-2xl font-semibold tabular-nums text-slate-800">
-        ${dollars}
+    <div className="relative rounded-lg border border-slate-200 bg-white p-4 text-center overflow-hidden">
+      {/* subtle rotating gradient border animation */}
+      <div className="absolute inset-0 rounded-lg opacity-30 pointer-events-none"
+        style={{
+          background: "linear-gradient(90deg, transparent, #bfdbfe, transparent)",
+          animation: "shimmer 2s linear infinite",
+          backgroundSize: "200% 100%",
+        }}
+      />
+      <div className="relative">
+        <div className="text-lg font-mono tabular-nums text-slate-300">
+          ${dollars}
+        </div>
+        <div className="text-xs text-slate-300 mt-1 uppercase tracking-wide">cost</div>
       </div>
-      <div className="text-xs text-slate-400 mt-1 font-medium uppercase tracking-wide">Estimated cost</div>
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+      `}</style>
     </div>
   );
 }
