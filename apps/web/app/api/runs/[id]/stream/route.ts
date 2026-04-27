@@ -40,8 +40,9 @@ export async function GET(
           const steps = await getSteps(db, id);
 
           for (const step of steps) {
-            if (!seenIds.has(step.id)) {
-              seenIds.add(step.id);
+            const key = `${step.id}:${step.status}`;
+            if (!seenIds.has(key)) {
+              seenIds.add(key);
               const eventType =
                 step.status === "succeeded"
                   ? "step.succeeded"

@@ -23,9 +23,17 @@ function reducer(state: RunStreamState, action: Action): RunStreamState {
       let status = state.status;
       if (e.type === "run.completed") status = "completed";
       if (e.type === "run.failed") status = "failed";
+      // Extract cost from any event that carries it
+      const raw = e as unknown as Record<string, unknown>;
+      const costCents = typeof raw["total_cost_cents"] === "number"
+        ? raw["total_cost_cents"]
+        : e.type === "run.completed" || e.type === "run.failed"
+          ? (e.run as unknown as Record<string, unknown>)["total_cost_cents"] as number ?? state.totalCostCents
+          : state.totalCostCents;
       return {
         ...state,
         status,
+        totalCostCents: Math.max(state.totalCostCents, costCents),
         events: [...state.events, e],
       };
     }
